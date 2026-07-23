@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>中考模拟 · 120题 · 错题本</title>
+    <title>中考模拟 · 120题 · 错题本（含解析）</title>
     <style>
         * {
             margin: 0;
@@ -176,6 +176,10 @@
             border-left: 6px solid #1f7b4d;
             background: #f2faf6;
         }
+        .q-item.unanswered {
+            border-left: 6px solid #f5a623;
+            background: #fffcf0;
+        }
         .q-num {
             min-width: 2.6rem;
             font-weight: 600;
@@ -220,9 +224,7 @@
             border-radius: 30px;
             padding: 0.1rem 0.7rem 0.1rem 0.3rem;
         }
-        .q-item .wrong-tag {
-            background: #c5283d;
-            color: white;
+        .q-item .tag {
             font-size: 0.7rem;
             font-weight: 700;
             padding: 0.1rem 0.7rem;
@@ -230,16 +232,10 @@
             margin-left: 6px;
             display: inline-block;
         }
-        .q-item .correct-tag {
-            background: #1f7b4d;
-            color: white;
-            font-size: 0.7rem;
-            font-weight: 700;
-            padding: 0.1rem 0.7rem;
-            border-radius: 30px;
-            margin-left: 6px;
-            display: inline-block;
-        }
+        .tag.wrong-tag { background: #c5283d; color: white; }
+        .tag.correct-tag { background: #1f7b4d; color: white; }
+        .tag.unanswered-tag { background: #f5a623; color: white; }
+
         .error-book {
             margin-top: 2rem;
             background: #fcf2f4;
@@ -253,25 +249,44 @@
             cursor: pointer;
             color: #a02030;
         }
-        .error-book .ref-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
-            gap: 5px;
-            margin-top: 0.8rem;
-        }
-        .error-book .ref-item {
+        .error-item {
             background: white;
-            border-radius: 30px;
-            padding: 0.2rem 0;
-            text-align: center;
-            font-size: 0.8rem;
-            border: 1px solid #e0bcc2;
-            color: #a02030;
+            border-radius: 18px;
+            padding: 0.8rem 1.2rem;
+            border-left: 6px solid #c5283d;
+            margin-bottom: 0.6rem;
+        }
+        .error-item .e-header {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 0.5rem 1rem;
             font-weight: 600;
         }
-        .error-book .ref-item.correct-ref {
+        .error-item .e-question {
+            font-weight: 500;
+            margin: 0.3rem 0;
+        }
+        .error-item .e-detail {
+            font-size: 0.92rem;
+            background: #f8f4f6;
+            padding: 0.4rem 0.8rem;
+            border-radius: 12px;
+            margin-top: 0.3rem;
+            color: #1f2f44;
+        }
+        .error-item .e-detail .label {
+            font-weight: 600;
+            color: #a02030;
+        }
+        .error-item .e-detail .correct-label {
             color: #1f7b4d;
-            border-color: #b8d9c9;
+        }
+        .error-item .e-detail .analysis {
+            margin-top: 0.3rem;
+            padding-top: 0.3rem;
+            border-top: 1px dashed #d0c4c8;
+            color: #1f3a5a;
         }
         .footnote {
             margin-top: 1.2rem;
@@ -293,7 +308,7 @@
 <body>
 <div class="paper" id="top">
     <div class="header">
-        <h1>📝 中考·120题 <span style="font-size:0.9rem; font-weight:400; color:#3c5a7a;">错题本</span></h1>
+        <h1>📝 中考·120题 <span style="font-size:0.9rem; font-weight:400; color:#3c5a7a;">错题本+解析</span></h1>
         <span class="meta">数学·语文·英语 各40题</span>
     </div>
     <div class="stats">
@@ -301,10 +316,9 @@
         <span>📖 语文 <span class="num" id="chineseCount">40</span></span>
         <span>🌎 英语 <span class="num" id="englishCount">40</span></span>
         <span>✅ 已答 <span class="num" id="answeredCount">0</span>/120</span>
-        <span>❌ 错题 <span class="num" id="wrongCount">0</span> <span class="badge-error">错题本</span></span>
+        <span>❌ 错题+未答 <span class="num" id="wrongCount">0</span> <span class="badge-error">错题本</span></span>
     </div>
 
-    <!-- 操作栏 -->
     <div class="action-bar">
         <div class="left">
             <button class="btn btn-outline" id="clearAllBtn">清空答案</button>
@@ -316,157 +330,166 @@
         </div>
     </div>
 
-    <!-- 题目容器 -->
     <div id="questionContainer" class="question-grid"></div>
 
-    <!-- 错题本 (独立) -->
+    <!-- 错题本 -->
     <div class="error-book" id="errorBook" style="display: none;">
         <details open id="errorDetails">
-            <summary>📕 错题本 · <span id="errorCountBadge">0</span> 道错题</summary>
-            <div id="errorList" style="margin-top: 0.8rem; display: flex; flex-direction: column; gap: 0.6rem;"></div>
-            <div style="margin-top: 0.8rem;">
+            <summary>📕 错题本 · <span id="errorCountBadge">0</span> 道（含未答）</summary>
+            <div id="errorList" style="margin-top: 0.8rem;"></div>
+            <div style="margin-top: 0.8rem; display: flex; flex-wrap: wrap; gap: 8px;">
                 <button class="btn btn-success" id="retryWrongBtn">🔄 重新练习错题</button>
-                <button class="btn btn-outline" id="clearWrongBtn" style="margin-left: 8px;">清空错题本</button>
+                <button class="btn btn-outline" id="clearWrongBtn">清空错题本</button>
             </div>
         </details>
     </div>
 
     <div class="footnote">
-        ⚡ 选择答案后自动记录 · 提交后标记对错 · 错题本自动收录
+        ⚡ 提交后自动收录错题与未答题 · 每题均含解析
     </div>
 </div>
 
 <script>
     (function() {
-        // ---------- 题库 (数学40, 语文40, 英语40) ----------
-        const mathPool = [
-            { q: '方程 x² - 4x + 3 = 0 的两个根分别是？', opts: ['A. 1, 3', 'B. -1, -3', 'C. 1, -3', 'D. -1, 3'], ans: 0 },
-            { q: '二次函数 y = (x-2)² + 1 的顶点坐标是？', opts: ['A. (2,1)', 'B. (-2,1)', 'C. (2,-1)', 'D. (-2,-1)'], ans: 0 },
-            { q: '一元二次方程 x² - 6x + 9 = 0 的解的情况是？', opts: ['A. 两个不等实根', 'B. 两个相等实根', 'C. 无实根', 'D. 无法确定'], ans: 1 },
-            { q: '二次函数 y = -x² + 4x - 3 的对称轴是？', opts: ['A. x = 2', 'B. x = -2', 'C. x = 4', 'D. x = -4'], ans: 0 },
-            { q: '方程 2x² - 5x + 2 = 0 的判别式 Δ = ?', opts: ['A. 9', 'B. -9', 'C. 25', 'D. 1'], ans: 0 },
-            { q: '抛物线 y = 2x² 向下平移3个单位后的解析式？', opts: ['A. y = 2x² - 3', 'B. y = 2x² + 3', 'C. y = 2(x-3)²', 'D. y = 2(x+3)²'], ans: 0 },
-            { q: '一元二次方程 x² + 2x - 8 = 0 的两根之积为？', opts: ['A. -8', 'B. 8', 'C. -2', 'D. 2'], ans: 0 },
-            { q: '二次函数 y = x² - 2x - 3 与x轴的交点坐标为？', opts: ['A. (3,0)和(-1,0)', 'B. (-3,0)和(1,0)', 'C. (3,0)和(1,0)', 'D. (-3,0)和(-1,0)'], ans: 0 },
-            { q: '方程 x² - 3x + 1 = 0 的根的情况是？', opts: ['A. 有两个不相等的实数根', 'B. 有两个相等实数根', 'C. 无实数根', 'D. 无法确定'], ans: 0 },
-            { q: '二次函数 y = -2(x+1)² + 5 的最大值是？', opts: ['A. 5', 'B. -5', 'C. 1', 'D. -1'], ans: 0 },
-            { q: '一元二次方程 x² - 4x = 0 的解为？', opts: ['A. x=0 或 x=4', 'B. x=0 或 x=-4', 'C. x=4 或 x=-4', 'D. 只有x=0'], ans: 0 },
-            { q: '抛物线 y = x² - 2x + 1 与y轴交点坐标？', opts: ['A. (0,1)', 'B. (1,0)', 'C. (0,-1)', 'D. (-1,0)'], ans: 0 },
-            { q: '方程 3x² - 2x - 1 = 0 的两根之和为？', opts: ['A. 2/3', 'B. -2/3', 'C. 1/3', 'D. -1/3'], ans: 0 },
-            { q: '二次函数 y = (x-1)(x+3) 的对称轴是？', opts: ['A. x = -1', 'B. x = 1', 'C. x = -3', 'D. x = 3'], ans: 0 },
-            { q: '一元二次方程 x² + 4x + 5 = 0 的判别式Δ = ?', opts: ['A. -4', 'B. 4', 'C. 0', 'D. 16'], ans: 0 },
-            { q: '将二次函数 y = x² 向左平移2个单位，再向上平移1个单位得到？', opts: ['A. y = (x+2)²+1', 'B. y = (x-2)²+1', 'C. y = (x+2)²-1', 'D. y = (x-2)²-1'], ans: 0 },
-            { q: '方程 x² - 7x + 12 = 0 的根为？', opts: ['A. 3, 4', 'B. -3, -4', 'C. 3, -4', 'D. -3, 4'], ans: 0 },
-            { q: '二次函数 y = 2x² + 3x - 2 的开口方向？', opts: ['A. 向上', 'B. 向下', 'C. 向左', 'D. 向右'], ans: 0 },
-            { q: '一元二次方程 (x-1)² = 9 的解为？', opts: ['A. x=4 或 x=-2', 'B. x=4 或 x=2', 'C. x=-4 或 x=2', 'D. x=-4 或 x=-2'], ans: 0 },
-            { q: '抛物线 y = -x² + 2x 的顶点横坐标为？', opts: ['A. 1', 'B. -1', 'C. 2', 'D. -2'], ans: 0 },
-            { q: '若关于x的方程 x² - kx + 4 = 0 有两个相等实数根，则k = ?', opts: ['A. ±4', 'B. 4', 'C. -4', 'D. ±2'], ans: 0 },
-            { q: '二次函数 y = 3x² - 6x + 5 的对称轴是？', opts: ['A. x=1', 'B. x=-1', 'C. x=2', 'D. x=-2'], ans: 0 },
-            { q: '方程 2x² - 8 = 0 的解是？', opts: ['A. x = ±2', 'B. x = ±4', 'C. x = 2', 'D. x = -2'], ans: 0 },
-            { q: '抛物线 y = x² - 4x + 4 与x轴有几个交点？', opts: ['A. 1个', 'B. 2个', 'C. 0个', 'D. 无数个'], ans: 0 },
-            { q: '一元二次方程 x² - 5x + 6 = 0 的两根分别为？', opts: ['A. 2, 3', 'B. -2, -3', 'C. 2, -3', 'D. -2, 3'], ans: 0 },
-            { q: '二次函数 y = 2(x-1)² - 3 的顶点坐标是？', opts: ['A. (1,-3)', 'B. (-1,-3)', 'C. (1,3)', 'D. (-1,3)'], ans: 0 },
-            { q: '方程 x² + 6x + 9 = 0 的根是？', opts: ['A. x = -3', 'B. x = 3', 'C. x = ±3', 'D. 无实数根'], ans: 0 },
-            { q: '二次函数 y = -x² + 4x - 4 的最大值为？', opts: ['A. 0', 'B. 4', 'C. -4', 'D. 8'], ans: 0 },
-            { q: '一元二次方程 4x² - 12x + 9 = 0 的判别式Δ = ?', opts: ['A. 0', 'B. 36', 'C. 144', 'D. -36'], ans: 0 },
-            { q: '将二次函数 y = 2x² 向右平移3个单位后的解析式？', opts: ['A. y = 2(x-3)²', 'B. y = 2(x+3)²', 'C. y = 2x² - 3', 'D. y = 2x² + 3'], ans: 0 },
-            { q: '方程 x² - 2x - 15 = 0 的根为？', opts: ['A. 5, -3', 'B. -5, 3', 'C. 5, 3', 'D. -5, -3'], ans: 0 },
-            { q: '二次函数 y = -3x² + 6x 的对称轴是？', opts: ['A. x=1', 'B. x=-1', 'C. x=2', 'D. x=-2'], ans: 0 },
-            { q: '一元二次方程 x² - 4x + 2 = 0 的两根之积为？', opts: ['A. 2', 'B. -2', 'C. 4', 'D. -4'], ans: 0 },
-            { q: '抛物线 y = x² - 2x + 1 的顶点坐标是？', opts: ['A. (1,0)', 'B. (-1,0)', 'C. (1,1)', 'D. (0,1)'], ans: 0 },
-            { q: '方程 2x² - 3x - 2 = 0 的解是？', opts: ['A. x=2 或 x=-0.5', 'B. x=-2 或 x=0.5', 'C. x=2 或 x=0.5', 'D. x=-2 或 x=-0.5'], ans: 0 },
-            { q: '二次函数 y = -2x² + 8x - 6 的顶点纵坐标为？', opts: ['A. 2', 'B. -2', 'C. 6', 'D. -6'], ans: 0 },
-            { q: '一元二次方程 x² + 3x + 2 = 0 的两根之和为？', opts: ['A. -3', 'B. 3', 'C. 2', 'D. -2'], ans: 0 },
-            { q: '抛物线 y = x² - 4x 与x轴的交点中，右边交点的横坐标是？', opts: ['A. 4', 'B. 0', 'C. -4', 'D. 2'], ans: 0 },
-            { q: '方程 9x² - 6x + 1 = 0 的根是？', opts: ['A. x=1/3', 'B. x=-1/3', 'C. x=1', 'D. x=-1'], ans: 0 },
-            { q: '二次函数 y = 0.5x² - x + 2 的最小值是？', opts: ['A. 1.5', 'B. 2', 'C. 0.5', 'D. 1'], ans: 0 },
-        ];
+        // ---------- 题库 (数学40, 语文40, 英语40) 增加解析字段 ----------
+        function makeMathPool() {
+            return [
+                { q: '方程 x² - 4x + 3 = 0 的两个根分别是？', opts: ['A. 1, 3', 'B. -1, -3', 'C. 1, -3', 'D. -1, 3'], ans: 0, analysis: '因式分解 (x-1)(x-3)=0，得 x=1 或 x=3。' },
+                { q: '二次函数 y = (x-2)² + 1 的顶点坐标是？', opts: ['A. (2,1)', 'B. (-2,1)', 'C. (2,-1)', 'D. (-2,-1)'], ans: 0, analysis: '顶点式 y=a(x-h)²+k，顶点为 (h,k)，即 (2,1)。' },
+                { q: '一元二次方程 x² - 6x + 9 = 0 的解的情况是？', opts: ['A. 两个不等实根', 'B. 两个相等实根', 'C. 无实根', 'D. 无法确定'], ans: 1, analysis: 'Δ=(-6)²-4×1×9=0，故有两个相等实根。' },
+                { q: '二次函数 y = -x² + 4x - 3 的对称轴是？', opts: ['A. x = 2', 'B. x = -2', 'C. x = 4', 'D. x = -4'], ans: 0, analysis: '对称轴 x=-b/(2a) = -4/(2×-1)=2。' },
+                { q: '方程 2x² - 5x + 2 = 0 的判别式 Δ = ?', opts: ['A. 9', 'B. -9', 'C. 25', 'D. 1'], ans: 0, analysis: 'Δ=(-5)²-4×2×2=25-16=9。' },
+                { q: '抛物线 y = 2x² 向下平移3个单位后的解析式？', opts: ['A. y = 2x² - 3', 'B. y = 2x² + 3', 'C. y = 2(x-3)²', 'D. y = 2(x+3)²'], ans: 0, analysis: '向下平移3，y 减3，得 y=2x²-3。' },
+                { q: '一元二次方程 x² + 2x - 8 = 0 的两根之积为？', opts: ['A. -8', 'B. 8', 'C. -2', 'D. 2'], ans: 0, analysis: '韦达定理，两根之积 c/a = -8/1 = -8。' },
+                { q: '二次函数 y = x² - 2x - 3 与x轴的交点坐标为？', opts: ['A. (3,0)和(-1,0)', 'B. (-3,0)和(1,0)', 'C. (3,0)和(1,0)', 'D. (-3,0)和(-1,0)'], ans: 0, analysis: '令 y=0，x²-2x-3=0 → (x-3)(x+1)=0，得 x=3 或 x=-1。' },
+                { q: '方程 x² - 3x + 1 = 0 的根的情况是？', opts: ['A. 有两个不相等的实数根', 'B. 有两个相等实数根', 'C. 无实数根', 'D. 无法确定'], ans: 0, analysis: 'Δ=9-4=5>0，有两个不等实根。' },
+                { q: '二次函数 y = -2(x+1)² + 5 的最大值是？', opts: ['A. 5', 'B. -5', 'C. 1', 'D. -1'], ans: 0, analysis: '顶点式，a=-2<0，最大值在顶点处，为 5。' },
+                { q: '一元二次方程 x² - 4x = 0 的解为？', opts: ['A. x=0 或 x=4', 'B. x=0 或 x=-4', 'C. x=4 或 x=-4', 'D. 只有x=0'], ans: 0, analysis: 'x(x-4)=0，得 x=0 或 x=4。' },
+                { q: '抛物线 y = x² - 2x + 1 与y轴交点坐标？', opts: ['A. (0,1)', 'B. (1,0)', 'C. (0,-1)', 'D. (-1,0)'], ans: 0, analysis: '令 x=0，y=1，交点 (0,1)。' },
+                { q: '方程 3x² - 2x - 1 = 0 的两根之和为？', opts: ['A. 2/3', 'B. -2/3', 'C. 1/3', 'D. -1/3'], ans: 0, analysis: '韦达定理，两根之和 -b/a = 2/3。' },
+                { q: '二次函数 y = (x-1)(x+3) 的对称轴是？', opts: ['A. x = -1', 'B. x = 1', 'C. x = -3', 'D. x = 3'], ans: 0, analysis: '展开 y=x²+2x-3，对称轴 x=-2/(2)= -1。' },
+                { q: '一元二次方程 x² + 4x + 5 = 0 的判别式Δ = ?', opts: ['A. -4', 'B. 4', 'C. 0', 'D. 16'], ans: 0, analysis: 'Δ=16-20=-4。' },
+                { q: '将二次函数 y = x² 向左平移2个单位，再向上平移1个单位得到？', opts: ['A. y = (x+2)²+1', 'B. y = (x-2)²+1', 'C. y = (x+2)²-1', 'D. y = (x-2)²-1'], ans: 0, analysis: '左移2: (x+2)²，上移1: +1。' },
+                { q: '方程 x² - 7x + 12 = 0 的根为？', opts: ['A. 3, 4', 'B. -3, -4', 'C. 3, -4', 'D. -3, 4'], ans: 0, analysis: '(x-3)(x-4)=0，得 x=3 或 4。' },
+                { q: '二次函数 y = 2x² + 3x - 2 的开口方向？', opts: ['A. 向上', 'B. 向下', 'C. 向左', 'D. 向右'], ans: 0, analysis: 'a=2>0，开口向上。' },
+                { q: '一元二次方程 (x-1)² = 9 的解为？', opts: ['A. x=4 或 x=-2', 'B. x=4 或 x=2', 'C. x=-4 或 x=2', 'D. x=-4 或 x=-2'], ans: 0, analysis: 'x-1=±3，得 x=4 或 x=-2。' },
+                { q: '抛物线 y = -x² + 2x 的顶点横坐标为？', opts: ['A. 1', 'B. -1', 'C. 2', 'D. -2'], ans: 0, analysis: '对称轴 x=-2/(2×-1)=1。' },
+                { q: '若关于x的方程 x² - kx + 4 = 0 有两个相等实数根，则k = ?', opts: ['A. ±4', 'B. 4', 'C. -4', 'D. ±2'], ans: 0, analysis: 'Δ=k²-16=0，k=±4。' },
+                { q: '二次函数 y = 3x² - 6x + 5 的对称轴是？', opts: ['A. x=1', 'B. x=-1', 'C. x=2', 'D. x=-2'], ans: 0, analysis: 'x= -(-6)/(2×3)=1。' },
+                { q: '方程 2x² - 8 = 0 的解是？', opts: ['A. x = ±2', 'B. x = ±4', 'C. x = 2', 'D. x = -2'], ans: 0, analysis: '2x²=8，x²=4，x=±2。' },
+                { q: '抛物线 y = x² - 4x + 4 与x轴有几个交点？', opts: ['A. 1个', 'B. 2个', 'C. 0个', 'D. 无数个'], ans: 0, analysis: 'Δ=16-16=0，与x轴有1个交点。' },
+                { q: '一元二次方程 x² - 5x + 6 = 0 的两根分别为？', opts: ['A. 2, 3', 'B. -2, -3', 'C. 2, -3', 'D. -2, 3'], ans: 0, analysis: '(x-2)(x-3)=0，得 2,3。' },
+                { q: '二次函数 y = 2(x-1)² - 3 的顶点坐标是？', opts: ['A. (1,-3)', 'B. (-1,-3)', 'C. (1,3)', 'D. (-1,3)'], ans: 0, analysis: '顶点式，顶点 (1,-3)。' },
+                { q: '方程 x² + 6x + 9 = 0 的根是？', opts: ['A. x = -3', 'B. x = 3', 'C. x = ±3', 'D. 无实数根'], ans: 0, analysis: '(x+3)²=0，x=-3。' },
+                { q: '二次函数 y = -x² + 4x - 4 的最大值为？', opts: ['A. 0', 'B. 4', 'C. -4', 'D. 8'], ans: 0, analysis: 'y=-(x-2)²，最大值为 0。' },
+                { q: '一元二次方程 4x² - 12x + 9 = 0 的判别式Δ = ?', opts: ['A. 0', 'B. 36', 'C. 144', 'D. -36'], ans: 0, analysis: 'Δ=144-144=0。' },
+                { q: '将二次函数 y = 2x² 向右平移3个单位后的解析式？', opts: ['A. y = 2(x-3)²', 'B. y = 2(x+3)²', 'C. y = 2x² - 3', 'D. y = 2x² + 3'], ans: 0, analysis: '右移3，x 替换为 x-3。' },
+                { q: '方程 x² - 2x - 15 = 0 的根为？', opts: ['A. 5, -3', 'B. -5, 3', 'C. 5, 3', 'D. -5, -3'], ans: 0, analysis: '(x-5)(x+3)=0，得 5,-3。' },
+                { q: '二次函数 y = -3x² + 6x 的对称轴是？', opts: ['A. x=1', 'B. x=-1', 'C. x=2', 'D. x=-2'], ans: 0, analysis: 'x=-6/(2×-3)=1。' },
+                { q: '一元二次方程 x² - 4x + 2 = 0 的两根之积为？', opts: ['A. 2', 'B. -2', 'C. 4', 'D. -4'], ans: 0, analysis: 'c/a = 2。' },
+                { q: '抛物线 y = x² - 2x + 1 的顶点坐标是？', opts: ['A. (1,0)', 'B. (-1,0)', 'C. (1,1)', 'D. (0,1)'], ans: 0, analysis: 'y=(x-1)²，顶点 (1,0)。' },
+                { q: '方程 2x² - 3x - 2 = 0 的解是？', opts: ['A. x=2 或 x=-0.5', 'B. x=-2 或 x=0.5', 'C. x=2 或 x=0.5', 'D. x=-2 或 x=-0.5'], ans: 0, analysis: '(2x+1)(x-2)=0，得 x=2 或 x=-0.5。' },
+                { q: '二次函数 y = -2x² + 8x - 6 的顶点纵坐标为？', opts: ['A. 2', 'B. -2', 'C. 6', 'D. -6'], ans: 0, analysis: 'y=-2(x-2)²+2，顶点纵坐标 2。' },
+                { q: '一元二次方程 x² + 3x + 2 = 0 的两根之和为？', opts: ['A. -3', 'B. 3', 'C. 2', 'D. -2'], ans: 0, analysis: '两根之和 -b/a = -3。' },
+                { q: '抛物线 y = x² - 4x 与x轴的交点中，右边交点的横坐标是？', opts: ['A. 4', 'B. 0', 'C. -4', 'D. 2'], ans: 0, analysis: 'x(x-4)=0，交点为0和4，右边为4。' },
+                { q: '方程 9x² - 6x + 1 = 0 的根是？', opts: ['A. x=1/3', 'B. x=-1/3', 'C. x=1', 'D. x=-1'], ans: 0, analysis: '(3x-1)²=0，x=1/3。' },
+                { q: '二次函数 y = 0.5x² - x + 2 的最小值是？', opts: ['A. 1.5', 'B. 2', 'C. 0.5', 'D. 1'], ans: 0, analysis: '顶点 x=1，y=0.5-1+2=1.5。' },
+            ];
+        }
 
-        const chinesePool = [
-            { q: '“蒹葭苍苍，白露为霜” 出自哪首诗？', opts: ['A. 《蒹葭》', 'B. 《关雎》', 'C. 《子衿》', 'D. 《鹿鸣》'], ans: 0 },
-            { q: '“长风破浪会有时” 的下一句是？', opts: ['A. 直挂云帆济沧海', 'B. 千金散尽还复来', 'C. 天生我材必有用', 'D. 与尔同销万古愁'], ans: 0 },
-            { q: '《岳阳楼记》的作者是？', opts: ['A. 范仲淹', 'B. 欧阳修', 'C. 王安石', 'D. 苏轼'], ans: 0 },
-            { q: '“野火烧不尽，春风吹又生” 描写的是？', opts: ['A. 草', 'B. 花', 'C. 树', 'D. 竹'], ans: 0 },
-            { q: '“劝君更尽一杯酒” 下一句是？', opts: ['A. 西出阳关无故人', 'B. 白云千载空悠悠', 'C. 天涯何处无芳草', 'D. 落花时节又逢君'], ans: 0 },
-            { q: '《醉翁亭记》中 “醉翁之意不在酒” 下一句？', opts: ['A. 在乎山水之间也', 'B. 在乎诗书之间也', 'C. 在乎风月之间也', 'D. 在乎琴棋之间也'], ans: 0 },
-            { q: '“大漠沙如雪” 出自李贺的哪首诗？', opts: ['A. 《马诗》', 'B. 《雁门太守行》', 'C. 《金铜仙人辞汉歌》', 'D. 《南园》'], ans: 0 },
-            { q: '《出师表》中 “受任于败军之际” 下一句是？', opts: ['A. 奉命于危难之间', 'B. 奉命于生死之间', 'C. 受命于危难之际', 'D. 受任于存亡之间'], ans: 0 },
-            { q: '“两岸猿声啼不住” 的下一句？', opts: ['A. 轻舟已过万重山', 'B. 千里江陵一日还', 'C. 孤帆远影碧空尽', 'D. 唯见长江天际流'], ans: 0 },
-            { q: '《桃花源记》的作者是？', opts: ['A. 陶渊明', 'B. 谢灵运', 'C. 王维', 'D. 孟浩然'], ans: 0 },
-            { q: '“海内存知己” 下一句是？', opts: ['A. 天涯若比邻', 'B. 万里尚为邻', 'C. 比邻若天涯', 'D. 天涯共此时'], ans: 0 },
-            { q: '《陋室铭》中 “斯是陋室” 下一句？', opts: ['A. 惟吾德馨', 'B. 何陋之有', 'C. 可以调素琴', 'D. 阅金经'], ans: 0 },
-            { q: '“月下飞天镜” 出自李白的哪首诗？', opts: ['A. 《渡荆门送别》', 'B. 《望庐山瀑布》', 'C. 《静夜思》', 'D. 《蜀道难》'], ans: 0 },
-            { q: '《鱼我所欲也》中 “舍生取义” 的观点出自？', opts: ['A. 孟子', 'B. 孔子', 'C. 老子', 'D. 韩非子'], ans: 0 },
-            { q: '“春风又绿江南岸” 的作者是？', opts: ['A. 王安石', 'B. 苏轼', 'C. 李清照', 'D. 欧阳修'], ans: 0 },
-            { q: '《送杜少府之任蜀州》中 “无为在歧路” 下句？', opts: ['A. 儿女共沾巾', 'B. 天涯若比邻', 'C. 风烟望五津', 'D. 城阙辅三秦'], ans: 0 },
-            { q: '“会当凌绝顶” 描写的是哪座山？', opts: ['A. 泰山', 'B. 华山', 'C. 衡山', 'D. 嵩山'], ans: 0 },
-            { q: '《曹刿论战》中 “一鼓作气” 下一句？', opts: ['A. 再而衰，三而竭', 'B. 再而竭，三而衰', 'C. 衰而竭', 'D. 竭而衰'], ans: 0 },
-            { q: '“采菊东篱下” 出自陶渊明的？', opts: ['A. 《饮酒》', 'B. 《归园田居》', 'C. 《桃花源记》', 'D. 《五柳先生传》'], ans: 0 },
-            { q: '《观沧海》中 “水何澹澹” 下一句？', opts: ['A. 山岛竦峙', 'B. 树木丛生', 'C. 百草丰茂', 'D. 秋风萧瑟'], ans: 0 },
-            { q: '“学而不思则罔” 下一句？', opts: ['A. 思而不学则殆', 'B. 学而不厌', 'C. 诲人不倦', 'D. 温故知新'], ans: 0 },
-            { q: '《生于忧患，死于安乐》中 “故天将降大任” 下一句？', opts: ['A. 于是人也', 'B. 必先苦其心志', 'C. 劳其筋骨', 'D. 饿其体肤'], ans: 0 },
-            { q: '“烟笼寒水月笼沙” 出自杜牧的？', opts: ['A. 《泊秦淮》', 'B. 《赤壁》', 'C. 《过华清宫》', 'D. 《江南春》'], ans: 0 },
-            { q: '《小石潭记》的作者是？', opts: ['A. 柳宗元', 'B. 韩愈', 'C. 欧阳修', 'D. 苏轼'], ans: 0 },
-            { q: '“不畏浮云遮望眼” 的下一句？', opts: ['A. 自缘身在最高层', 'B. 只缘身在此山中', 'C. 不识庐山真面目', 'D. 远近高低各不同'], ans: 0 },
-            { q: '《爱莲说》中 “出淤泥而不染” 描写的是？', opts: ['A. 莲花', 'B. 兰花', 'C. 菊花', 'D. 梅花'], ans: 0 },
-            { q: '“独在异乡为异客” 作者是？', opts: ['A. 王维', 'B. 李白', 'C. 杜甫', 'D. 白居易'], ans: 0 },
-            { q: '《邹忌讽齐王纳谏》中 “吾妻之美我者” 下一句？', opts: ['A. 私我也', 'B. 畏我也', 'C. 欲有求于我也', 'D. 皆以美于徐公'], ans: 0 },
-            { q: '“夕阳西下，断肠人在天涯” 出自？', opts: ['A. 《天净沙·秋思》', 'B. 《秋词》', 'C. 《长相思》', 'D. 《苏幕遮》'], ans: 0 },
-            { q: '《记承天寺夜游》作者是？', opts: ['A. 苏轼', 'B. 苏辙', 'C. 苏洵', 'D. 欧阳修'], ans: 0 },
-            { q: '“山重水复疑无路” 下一句？', opts: ['A. 柳暗花明又一村', 'B. 飞入寻常百姓家', 'C. 乱花渐欲迷人眼', 'D. 浅草才能没马蹄'], ans: 0 },
-            { q: '《木兰诗》中 “万里赴戎机” 下一句？', opts: ['A. 关山度若飞', 'B. 朔气传金柝', 'C. 寒光照铁衣', 'D. 策勋十二转'], ans: 0 },
-            { q: '“落红不是无情物” 作者是？', opts: ['A. 龚自珍', 'B. 郑板桥', 'C. 赵翼', 'D. 谭嗣同'], ans: 0 },
-            { q: '《岳阳楼记》中 “先天下之忧而忧” 下一句？', opts: ['A. 后天下之乐而乐', 'B. 先天下之乐而乐', 'C. 后天下之忧而忧', 'D. 乐以天下'], ans: 0 },
-            { q: '“举杯邀明月” 出自李白的？', opts: ['A. 《月下独酌》', 'B. 《将进酒》', 'C. 《行路难》', 'D. 《宣州谢朓楼饯别》'], ans: 0 },
-            { q: '《醉翁亭记》中 “山水之乐” 下一句？', opts: ['A. 得之心而寓之酒也', 'B. 在乎山水之间也', 'C. 而乐亦无穷也', 'D. 四时之景不同'], ans: 0 },
-            { q: '“海日生残夜” 下一句？', opts: ['A. 江春入旧年', 'B. 乡书何处达', 'C. 归雁洛阳边', 'D. 风正一帆悬'], ans: 0 },
-            { q: '《鱼我所欲也》中 “二者不可得兼” 下一句？', opts: ['A. 舍鱼而取熊掌者也', 'B. 舍生而取义者也', 'C. 舍生取义', 'D. 舍利取义'], ans: 0 },
-            { q: '“大漠孤烟直” 下一句？', opts: ['A. 长河落日圆', 'B. 落日长河圆', 'C. 长河落日红', 'D. 落日大漠圆'], ans: 0 },
-            { q: '“欲穷千里目” 下一句？', opts: ['A. 更上一层楼', 'B. 黄河入海流', 'C. 山穷水复疑无路', 'D. 柳暗花明又一村'], ans: 0 },
-        ];
+        function makeChinesePool() {
+            return [
+                { q: '“蒹葭苍苍，白露为霜” 出自哪首诗？', opts: ['A. 《蒹葭》', 'B. 《关雎》', 'C. 《子衿》', 'D. 《鹿鸣》'], ans: 0, analysis: '出自《诗经·秦风·蒹葭》，是描写追求意中人而不得的诗。' },
+                { q: '“长风破浪会有时” 的下一句是？', opts: ['A. 直挂云帆济沧海', 'B. 千金散尽还复来', 'C. 天生我材必有用', 'D. 与尔同销万古愁'], ans: 0, analysis: '李白《行路难》，全句“长风破浪会有时，直挂云帆济沧海”。' },
+                { q: '《岳阳楼记》的作者是？', opts: ['A. 范仲淹', 'B. 欧阳修', 'C. 王安石', 'D. 苏轼'], ans: 0, analysis: '范仲淹，北宋政治家、文学家，谥号文正。' },
+                { q: '“野火烧不尽，春风吹又生” 描写的是？', opts: ['A. 草', 'B. 花', 'C. 树', 'D. 竹'], ans: 0, analysis: '白居易《赋得古原草送别》，借草抒怀，赞美顽强生命力。' },
+                { q: '“劝君更尽一杯酒” 下一句是？', opts: ['A. 西出阳关无故人', 'B. 白云千载空悠悠', 'C. 天涯何处无芳草', 'D. 落花时节又逢君'], ans: 0, analysis: '王维《送元二使安西》，深情惜别。' },
+                { q: '《醉翁亭记》中 “醉翁之意不在酒” 下一句？', opts: ['A. 在乎山水之间也', 'B. 在乎诗书之间也', 'C. 在乎风月之间也', 'D. 在乎琴棋之间也'], ans: 0, analysis: '欧阳修《醉翁亭记》，“醉翁之意不在酒，在乎山水之间也”。' },
+                { q: '“大漠沙如雪” 出自李贺的哪首诗？', opts: ['A. 《马诗》', 'B. 《雁门太守行》', 'C. 《金铜仙人辞汉歌》', 'D. 《南园》'], ans: 0, analysis: '李贺《马诗二十三首·其五》，描写边塞景色。' },
+                { q: '《出师表》中 “受任于败军之际” 下一句是？', opts: ['A. 奉命于危难之间', 'B. 奉命于生死之间', 'C. 受命于危难之际', 'D. 受任于存亡之间'], ans: 0, analysis: '诸葛亮《出师表》，表达对蜀汉的忠诚。' },
+                { q: '“两岸猿声啼不住” 的下一句？', opts: ['A. 轻舟已过万重山', 'B. 千里江陵一日还', 'C. 孤帆远影碧空尽', 'D. 唯见长江天际流'], ans: 0, analysis: '李白《早发白帝城》，轻舟快行，心情愉悦。' },
+                { q: '《桃花源记》的作者是？', opts: ['A. 陶渊明', 'B. 谢灵运', 'C. 王维', 'D. 孟浩然'], ans: 0, analysis: '陶渊明，东晋诗人，描绘理想社会。' },
+                { q: '“海内存知己” 下一句是？', opts: ['A. 天涯若比邻', 'B. 万里尚为邻', 'C. 比邻若天涯', 'D. 天涯共此时'], ans: 0, analysis: '王勃《送杜少府之任蜀州》，表达真挚友情。' },
+                { q: '《陋室铭》中 “斯是陋室” 下一句？', opts: ['A. 惟吾德馨', 'B. 何陋之有', 'C. 可以调素琴', 'D. 阅金经'], ans: 0, analysis: '刘禹锡《陋室铭》，以德为馨。' },
+                { q: '“月下飞天镜” 出自李白的哪首诗？', opts: ['A. 《渡荆门送别》', 'B. 《望庐山瀑布》', 'C. 《静夜思》', 'D. 《蜀道难》'], ans: 0, analysis: '《渡荆门送别》，“月下飞天镜，云生结海楼”。' },
+                { q: '《鱼我所欲也》中 “舍生取义” 的观点出自？', opts: ['A. 孟子', 'B. 孔子', 'C. 老子', 'D. 韩非子'], ans: 0, analysis: '孟子，儒家思想，强调道义高于生命。' },
+                { q: '“春风又绿江南岸” 的作者是？', opts: ['A. 王安石', 'B. 苏轼', 'C. 李清照', 'D. 欧阳修'], ans: 0, analysis: '王安石《泊船瓜洲》，炼字精妙。' },
+                { q: '《送杜少府之任蜀州》中 “无为在歧路” 下句？', opts: ['A. 儿女共沾巾', 'B. 天涯若比邻', 'C. 风烟望五津', 'D. 城阙辅三秦'], ans: 0, analysis: '王勃《送杜少府之任蜀州》，劝慰友人。' },
+                { q: '“会当凌绝顶” 描写的是哪座山？', opts: ['A. 泰山', 'B. 华山', 'C. 衡山', 'D. 嵩山'], ans: 0, analysis: '杜甫《望岳》，描写泰山雄伟。' },
+                { q: '《曹刿论战》中 “一鼓作气” 下一句？', opts: ['A. 再而衰，三而竭', 'B. 再而竭，三而衰', 'C. 衰而竭', 'D. 竭而衰'], ans: 0, analysis: '《左传》，“一鼓作气，再而衰，三而竭”。' },
+                { q: '“采菊东篱下” 出自陶渊明的？', opts: ['A. 《饮酒》', 'B. 《归园田居》', 'C. 《桃花源记》', 'D. 《五柳先生传》'], ans: 0, analysis: '《饮酒·其五》，悠然自得。' },
+                { q: '《观沧海》中 “水何澹澹” 下一句？', opts: ['A. 山岛竦峙', 'B. 树木丛生', 'C. 百草丰茂', 'D. 秋风萧瑟'], ans: 0, analysis: '曹操《观沧海》，“水何澹澹，山岛竦峙”。' },
+                { q: '“学而不思则罔” 下一句？', opts: ['A. 思而不学则殆', 'B. 学而不厌', 'C. 诲人不倦', 'D. 温故知新'], ans: 0, analysis: '《论语·为政》，强调学思结合。' },
+                { q: '《生于忧患，死于安乐》中 “故天将降大任” 下一句？', opts: ['A. 于是人也', 'B. 必先苦其心志', 'C. 劳其筋骨', 'D. 饿其体肤'], ans: 0, analysis: '孟子，完整句“故天将降大任于是人也”。' },
+                { q: '“烟笼寒水月笼沙” 出自杜牧的？', opts: ['A. 《泊秦淮》', 'B. 《赤壁》', 'C. 《过华清宫》', 'D. 《江南春》'], ans: 0, analysis: '杜牧《泊秦淮》，借景抒怀。' },
+                { q: '《小石潭记》的作者是？', opts: ['A. 柳宗元', 'B. 韩愈', 'C. 欧阳修', 'D. 苏轼'], ans: 0, analysis: '柳宗元，唐代“古文运动”领袖之一。' },
+                { q: '“不畏浮云遮望眼” 的下一句？', opts: ['A. 自缘身在最高层', 'B. 只缘身在此山中', 'C. 不识庐山真面目', 'D. 远近高低各不同'], ans: 0, analysis: '王安石《登飞来峰》，“不畏浮云遮望眼，自缘身在最高层”。' },
+                { q: '《爱莲说》中 “出淤泥而不染” 描写的是？', opts: ['A. 莲花', 'B. 兰花', 'C. 菊花', 'D. 梅花'], ans: 0, analysis: '周敦颐《爱莲说》，赞美莲花高洁。' },
+                { q: '“独在异乡为异客” 作者是？', opts: ['A. 王维', 'B. 李白', 'C. 杜甫', 'D. 白居易'], ans: 0, analysis: '王维《九月九日忆山东兄弟》。' },
+                { q: '《邹忌讽齐王纳谏》中 “吾妻之美我者” 下一句？', opts: ['A. 私我也', 'B. 畏我也', 'C. 欲有求于我也', 'D. 皆以美于徐公'], ans: 0, analysis: '《战国策》，“吾妻之美我者，私我也”。' },
+                { q: '“夕阳西下，断肠人在天涯” 出自？', opts: ['A. 《天净沙·秋思》', 'B. 《秋词》', 'C. 《长相思》', 'D. 《苏幕遮》'], ans: 0, analysis: '马致远《天净沙·秋思》，秋思之祖。' },
+                { q: '《记承天寺夜游》作者是？', opts: ['A. 苏轼', 'B. 苏辙', 'C. 苏洵', 'D. 欧阳修'], ans: 0, analysis: '苏轼，北宋文学家。' },
+                { q: '“山重水复疑无路” 下一句？', opts: ['A. 柳暗花明又一村', 'B. 飞入寻常百姓家', 'C. 乱花渐欲迷人眼', 'D. 浅草才能没马蹄'], ans: 0, analysis: '陆游《游山西村》，寓哲理于景物。' },
+                { q: '《木兰诗》中 “万里赴戎机” 下一句？', opts: ['A. 关山度若飞', 'B. 朔气传金柝', 'C. 寒光照铁衣', 'D. 策勋十二转'], ans: 0, analysis: '《木兰诗》，“万里赴戎机，关山度若飞”。' },
+                { q: '“落红不是无情物” 作者是？', opts: ['A. 龚自珍', 'B. 郑板桥', 'C. 赵翼', 'D. 谭嗣同'], ans: 0, analysis: '龚自珍《己亥杂诗·其五》。' },
+                { q: '《岳阳楼记》中 “先天下之忧而忧” 下一句？', opts: ['A. 后天下之乐而乐', 'B. 先天下之乐而乐', 'C. 后天下之忧而忧', 'D. 乐以天下'], ans: 0, analysis: '范仲淹，以天下为己任。' },
+                { q: '“举杯邀明月” 出自李白的？', opts: ['A. 《月下独酌》', 'B. 《将进酒》', 'C. 《行路难》', 'D. 《宣州谢朓楼饯别》'], ans: 0, analysis: '《月下独酌》，孤独中自得其乐。' },
+                { q: '《醉翁亭记》中 “山水之乐” 下一句？', opts: ['A. 得之心而寓之酒也', 'B. 在乎山水之间也', 'C. 而乐亦无穷也', 'D. 四时之景不同'], ans: 0, analysis: '“山水之乐，得之心而寓之酒也”。' },
+                { q: '“海日生残夜” 下一句？', opts: ['A. 江春入旧年', 'B. 乡书何处达', 'C. 归雁洛阳边', 'D. 风正一帆悬'], ans: 0, analysis: '王湾《次北固山下》，蕴含新事物代替旧事物。' },
+                { q: '《鱼我所欲也》中 “二者不可得兼” 下一句？', opts: ['A. 舍鱼而取熊掌者也', 'B. 舍生而取义者也', 'C. 舍生取义', 'D. 舍利取义'], ans: 0, analysis: '“二者不可得兼，舍鱼而取熊掌者也”。' },
+                { q: '“大漠孤烟直” 下一句？', opts: ['A. 长河落日圆', 'B. 落日长河圆', 'C. 长河落日红', 'D. 落日大漠圆'], ans: 0, analysis: '王维《使至塞上》，壮阔边塞风光。' },
+                { q: '“欲穷千里目” 下一句？', opts: ['A. 更上一层楼', 'B. 黄河入海流', 'C. 山穷水复疑无路', 'D. 柳暗花明又一村'], ans: 0, analysis: '王之涣《登鹳雀楼》，蕴含哲理。' },
+            ];
+        }
 
-        const englishPool = [
-            { q: '— What’s your favorite subject? — My favorite subject is _______.', opts: ['A. math', 'B. the math', 'C. maths', 'D. a math'], ans: 0 },
-            { q: 'She _______ a teacher in 2020.', opts: ['A. become', 'B. became', 'C. is becoming', 'D. has become'], ans: 1 },
-            { q: 'There _______ a lot of trees in the park.', opts: ['A. is', 'B. are', 'C. was', 'D. were'], ans: 1 },
-            { q: '— _______ do you go to the library? — Twice a week.', opts: ['A. How long', 'B. How often', 'C. How soon', 'D. How much'], ans: 1 },
-            { q: 'The book _______ is on the desk is mine.', opts: ['A. which', 'B. who', 'C. whom', 'D. what'], ans: 0 },
-            { q: 'I _______ to the cinema yesterday.', opts: ['A. go', 'B. went', 'C. have gone', 'D. was going'], ans: 1 },
-            { q: 'If it _______ tomorrow, we will stay at home.', opts: ['A. rain', 'B. rains', 'C. will rain', 'D. rained'], ans: 1 },
-            { q: 'She is _______ girl in our class.', opts: ['A. taller', 'B. tallest', 'C. the taller', 'D. the tallest'], ans: 3 },
-            { q: '— Could you help me? — _______.', opts: ['A. Yes, please', 'B. Sure, no problem', 'C. You’re welcome', 'D. That’s right'], ans: 1 },
-            { q: 'He _______ in Beijing for 5 years.', opts: ['A. live', 'B. lived', 'C. has lived', 'D. was living'], ans: 2 },
-            { q: '_______ a beautiful day!', opts: ['A. How', 'B. What', 'C. Where', 'D. When'], ans: 1 },
-            { q: 'I like music _______ I can dance to.', opts: ['A. what', 'B. who', 'C. that', 'D. whom'], ans: 2 },
-            { q: 'My mother _______ breakfast at 7:00 every day.', opts: ['A. make', 'B. makes', 'C. made', 'D. is making'], ans: 1 },
-            { q: '— _______ is your father? — He is a doctor.', opts: ['A. Who', 'B. What', 'C. Which', 'D. Whose'], ans: 1 },
-            { q: 'I have _______ interesting book.', opts: ['A. a', 'B. an', 'C. the', 'D. /'], ans: 1 },
-            { q: 'We _______ to the park if it is sunny.', opts: ['A. go', 'B. went', 'C. will go', 'D. have gone'], ans: 2 },
-            { q: 'She is _______ at English than me.', opts: ['A. good', 'B. better', 'C. best', 'D. well'], ans: 1 },
-            { q: '— Thank you very much. — _______.', opts: ['A. No, thanks', 'B. You’re welcome', 'C. That’s OK', 'D. All right'], ans: 1 },
-            { q: 'My sister _______ a new bike yesterday.', opts: ['A. buy', 'B. bought', 'C. has bought', 'D. was buying'], ans: 1 },
-            { q: 'The teacher said the earth _______ around the sun.', opts: ['A. go', 'B. goes', 'C. went', 'D. is going'], ans: 1 },
-            { q: '— _______ do you like summer? — Because I can swim.', opts: ['A. Why', 'B. What', 'C. When', 'D. Where'], ans: 0 },
-            { q: 'I _______ my homework when the phone rang.', opts: ['A. do', 'B. did', 'C. was doing', 'D. have done'], ans: 2 },
-            { q: 'There is _______ water in the bottle.', opts: ['A. little', 'B. a little', 'C. few', 'D. a few'], ans: 1 },
-            { q: '— Can you speak English? — Yes, but only _______.', opts: ['A. a lot', 'B. a little', 'C. little', 'D. few'], ans: 1 },
-            { q: 'I’ll call you _______ I arrive home.', opts: ['A. while', 'B. as soon as', 'C. until', 'D. though'], ans: 1 },
-            { q: 'He _______ to school by bus every day.', opts: ['A. go', 'B. goes', 'C. went', 'D. is going'], ans: 1 },
-            { q: 'The movie is _______ interesting than that one.', opts: ['A. much', 'B. more', 'C. most', 'D. very'], ans: 1 },
-            { q: '— _______ you like some coffee? — Yes, please.', opts: ['A. Do', 'B. Would', 'C. Are', 'D. Could'], ans: 1 },
-            { q: 'I _______ a new phone last week.', opts: ['A. buy', 'B. bought', 'C. have bought', 'D. was buying'], ans: 1 },
-            { q: 'She _______ to Japan twice.', opts: ['A. go', 'B. went', 'C. has been', 'D. is going'], ans: 2 },
-            { q: 'The window _______ by the boy.', opts: ['A. break', 'B. broke', 'C. was broken', 'D. is broken'], ans: 2 },
-            { q: '_______ you please pass me the salt?', opts: ['A. Could', 'B. Must', 'C. Should', 'D. Need'], ans: 0 },
-            { q: 'I’m looking forward _______ you.', opts: ['A. to see', 'B. to seeing', 'C. seeing', 'D. see'], ans: 1 },
-            { q: 'He is _______ young to go to school.', opts: ['A. too', 'B. so', 'C. very', 'D. enough'], ans: 0 },
-            { q: 'She has _______ a lot of money.', opts: ['A. spend', 'B. spent', 'C. spending', 'D. spends'], ans: 1 },
-            { q: 'The teacher told us _______ late again.', opts: ['A. not be', 'B. not to be', 'C. don’t be', 'D. not being'], ans: 1 },
-            { q: '_______ the weather is fine, we will go for a picnic.', opts: ['A. If', 'B. Unless', 'C. Although', 'D. Because'], ans: 0 },
-            { q: 'The ruler is _______ than that one.', opts: ['A. long', 'B. longer', 'C. longest', 'D. more long'], ans: 1 },
-            { q: 'He enjoys _______ football after school.', opts: ['A. play', 'B. to play', 'C. playing', 'D. played'], ans: 2 },
-            { q: '— _______ is the population of China? — About 1.4 billion.', opts: ['A. How many', 'B. How much', 'C. What', 'D. Which'], ans: 2 },
-        ];
+        function makeEnglishPool() {
+            return [
+                { q: '— What’s your favorite subject? — My favorite subject is _______.', opts: ['A. math', 'B. the math', 'C. maths', 'D. a math'], ans: 0, analysis: '学科前不加冠词，math 为不可数名词。' },
+                { q: 'She _______ a teacher in 2020.', opts: ['A. become', 'B. became', 'C. is becoming', 'D. has become'], ans: 1, analysis: '2020 是过去时间，用一般过去时 became。' },
+                { q: 'There _______ a lot of trees in the park.', opts: ['A. is', 'B. are', 'C. was', 'D. were'], ans: 1, analysis: 'trees 复数，且陈述事实用一般现在时 are。' },
+                { q: '— _______ do you go to the library? — Twice a week.', opts: ['A. How long', 'B. How often', 'C. How soon', 'D. How much'], ans: 1, analysis: '询问频率，用 How often。' },
+                { q: 'The book _______ is on the desk is mine.', opts: ['A. which', 'B. who', 'C. whom', 'D. what'], ans: 0, analysis: '关系代词 which 指代物，在从句中作主语。' },
+                { q: 'I _______ to the cinema yesterday.', opts: ['A. go', 'B. went', 'C. have gone', 'D. was going'], ans: 1, analysis: 'yesterday 过去时间，用一般过去时 went。' },
+                { q: 'If it _______ tomorrow, we will stay at home.', opts: ['A. rain', 'B. rains', 'C. will rain', 'D. rained'], ans: 1, analysis: '条件状语从句，主将从现，用 rains。' },
+                { q: 'She is _______ girl in our class.', opts: ['A. taller', 'B. tallest', 'C. the taller', 'D. the tallest'], ans: 3, analysis: '最高级前加 the，tallest。' },
+                { q: '— Could you help me? — _______.', opts: ['A. Yes, please', 'B. Sure, no problem', 'C. You’re welcome', 'D. That’s right'], ans: 1, analysis: '对请求的肯定回答，常用 Sure, no problem。' },
+                { q: 'He _______ in Beijing for 5 years.', opts: ['A. live', 'B. lived', 'C. has lived', 'D. was living'], ans: 2, analysis: 'for 5 years 表示持续，用现在完成时 has lived。' },
+                { q: '_______ a beautiful day!', opts: ['A. How', 'B. What', 'C. Where', 'D. When'], ans: 1, analysis: '感叹句 What + a/an + 形容词 + 可数单数。' },
+                { q: 'I like music _______ I can dance to.', opts: ['A. what', 'B. who', 'C. that', 'D. whom'], ans: 2, analysis: '关系代词 that 指代物，作宾语。' },
+                { q: 'My mother _______ breakfast at 7:00 every day.', opts: ['A. make', 'B. makes', 'C. made', 'D. is making'], ans: 1, analysis: 'every day 一般现在时，主语三单 makes。' },
+                { q: '— _______ is your father? — He is a doctor.', opts: ['A. Who', 'B. What', 'C. Which', 'D. Whose'], ans: 1, analysis: '询问职业，用 What。' },
+                { q: 'I have _______ interesting book.', opts: ['A. a', 'B. an', 'C. the', 'D. /'], ans: 1, analysis: 'interesting 以元音音素开头，用 an。' },
+                { q: 'We _______ to the park if it is sunny.', opts: ['A. go', 'B. went', 'C. will go', 'D. have gone'], ans: 2, analysis: '主将从现，主句用 will go。' },
+                { q: 'She is _______ at English than me.', opts: ['A. good', 'B. better', 'C. best', 'D. well'], ans: 1, analysis: 'than 比较级，better。' },
+                { q: '— Thank you very much. — _______.', opts: ['A. No, thanks', 'B. You’re welcome', 'C. That’s OK', 'D. All right'], ans: 1, analysis: '回答感谢用 You’re welcome。' },
+                { q: 'My sister _______ a new bike yesterday.', opts: ['A. buy', 'B. bought', 'C. has bought', 'D. was buying'], ans: 1, analysis: 'yesterday 过去时，bought。' },
+                { q: 'The teacher said the earth _______ around the sun.', opts: ['A. go', 'B. goes', 'C. went', 'D. is going'], ans: 1, analysis: '客观真理，用一般现在时 goes。' },
+                { q: '— _______ do you like summer? — Because I can swim.', opts: ['A. Why', 'B. What', 'C. When', 'D. Where'], ans: 0, analysis: '询问原因，用 Why。' },
+                { q: 'I _______ my homework when the phone rang.', opts: ['A. do', 'B. did', 'C. was doing', 'D. have done'], ans: 2, analysis: '过去进行时，表示过去某一时刻正在做。' },
+                { q: 'There is _______ water in the bottle.', opts: ['A. little', 'B. a little', 'C. few', 'D. a few'], ans: 1, analysis: 'water 不可数，a little 表示“有一些”。' },
+                { q: '— Can you speak English? — Yes, but only _______.', opts: ['A. a lot', 'B. a little', 'C. little', 'D. few'], ans: 1, analysis: 'a little 表示“一点点”，修饰不可数名词。' },
+                { q: 'I’ll call you _______ I arrive home.', opts: ['A. while', 'B. as soon as', 'C. until', 'D. though'], ans: 1, analysis: 'as soon as 表示“一……就……”，主将从现。' },
+                { q: 'He _______ to school by bus every day.', opts: ['A. go', 'B. goes', 'C. went', 'D. is going'], ans: 1, analysis: 'every day 一般现在时，三单 goes。' },
+                { q: 'The movie is _______ interesting than that one.', opts: ['A. much', 'B. more', 'C. most', 'D. very'], ans: 1, analysis: 'than 比较级，more interesting。' },
+                { q: '— _______ you like some coffee? — Yes, please.', opts: ['A. Do', 'B. Would', 'C. Are', 'D. Could'], ans: 1, analysis: 'Would you like...? 表示委婉请求。' },
+                { q: 'I _______ a new phone last week.', opts: ['A. buy', 'B. bought', 'C. have bought', 'D. was buying'], ans: 1, analysis: 'last week 过去时，bought。' },
+                { q: 'She _______ to Japan twice.', opts: ['A. go', 'B. went', 'C. has been', 'D. is going'], ans: 2, analysis: 'twice 表示次数，用现在完成时 has been。' },
+                { q: 'The window _______ by the boy.', opts: ['A. break', 'B. broke', 'C. was broken', 'D. is broken'], ans: 2, analysis: '被动语态，过去时 was broken。' },
+                { q: '_______ you please pass me the salt?', opts: ['A. Could', 'B. Must', 'C. Should', 'D. Need'], ans: 0, analysis: 'Could you please...? 礼貌请求。' },
+                { q: 'I’m looking forward _______ you.', opts: ['A. to see', 'B. to seeing', 'C. seeing', 'D. see'], ans: 1, analysis: 'look forward to doing，to 是介词。' },
+                { q: 'He is _______ young to go to school.', opts: ['A. too', 'B. so', 'C. very', 'D. enough'], ans: 0, analysis: 'too...to... 表示“太……而不能……”。' },
+                { q: 'She has _______ a lot of money.', opts: ['A. spend', 'B. spent', 'C. spending', 'D. spends'], ans: 1, analysis: '现在完成时 has spent。' },
+                { q: 'The teacher told us _______ late again.', opts: ['A. not be', 'B. not to be', 'C. don’t be', 'D. not being'], ans: 1, analysis: 'tell sb. not to do，不定式否定。' },
+                { q: '_______ the weather is fine, we will go for a picnic.', opts: ['A. If', 'B. Unless', 'C. Although', 'D. Because'], ans: 0, analysis: '条件状语从句，用 If。' },
+                { q: 'The ruler is _______ than that one.', opts: ['A. long', 'B. longer', 'C. longest', 'D. more long'], ans: 1, analysis: 'than 比较级，longer。' },
+                { q: 'He enjoys _______ football after school.', opts: ['A. play', 'B. to play', 'C. playing', 'D. played'], ans: 2, analysis: 'enjoy doing，固定搭配。' },
+                { q: '— _______ is the population of China? — About 1.4 billion.', opts: ['A. How many', 'B. How much', 'C. What', 'D. Which'], ans: 2, analysis: '询问人口用 What is the population?。' },
+            ];
+        }
+
+        const mathPool = makeMathPool();
+        const chinesePool = makeChinesePool();
+        const englishPool = makeEnglishPool();
 
         // 组装
         const mathSelected = mathPool.slice(0, 40);
@@ -483,15 +506,16 @@
             subject: subjectMap[idx],
             text: q.q,
             options: q.opts,
-            ans: q.ans
+            ans: q.ans,
+            analysis: q.analysis || '解析待补充'
         }));
 
         // 状态
         const userAnswers = new Array(120).fill(null);
-        let wrongIds = new Set(); // 错题id (1-based)
+        let wrongIds = new Set(); // 错题+未答题 id (1-based)
         let submitted = false;
 
-        // 渲染
+        // 渲染试卷
         const container = document.getElementById('questionContainer');
         let html = '';
         let currentSubject = '';
@@ -501,7 +525,6 @@
                 currentSubject = q.subject;
                 html += `<div class="subject-divider"><h2>${currentSubject}</h2><span class="badge">${currentSubject === '数学' ? '一元二次方程 · 二次函数' : currentSubject === '语文' ? '古诗 · 文言文' : '基础·语法'}</span></div>`;
             }
-            const optLabels = ['A', 'B', 'C', 'D'];
             let optsHtml = q.options.map((opt, idx) => {
                 return `<label><input type="radio" name="q${q.id}" value="${idx}" data-qid="${q.id}"> ${opt}</label>`;
             }).join('');
@@ -525,15 +548,12 @@
                 const val = parseInt(this.value);
                 userAnswers[qid - 1] = val;
                 updateAnsweredCount();
-                // 高亮
                 const parent = this.closest('.options');
                 parent.querySelectorAll('label').forEach(lb => lb.classList.remove('selected-option'));
                 this.closest('label').classList.add('selected-option');
-                // 如果已提交，重新标记对错
                 if (submitted) {
                     markQuestion(qid);
                 }
-                // 更新错题本
                 updateErrorBook();
             });
         });
@@ -543,49 +563,49 @@
             document.getElementById('answeredCount').textContent = count;
         }
 
-        // 标记单个题目对错 (更新样式)
         function markQuestion(qid) {
             const idx = qid - 1;
             const q = finalQuestions[idx];
             const userAns = userAnswers[idx];
             const item = document.getElementById(`qitem-${qid}`);
             if (!item) return;
-            // 移除原有样式
-            item.classList.remove('wrong', 'correct-highlight');
-            // 移除tag
-            const oldTag = item.querySelector('.wrong-tag, .correct-tag');
+            item.classList.remove('wrong', 'correct-highlight', 'unanswered');
+            const oldTag = item.querySelector('.tag');
             if (oldTag) oldTag.remove();
 
-            if (userAns === null) return;
+            if (userAns === null) {
+                // 未答：加入错题本
+                item.classList.add('unanswered');
+                const tag = document.createElement('span');
+                tag.className = 'tag unanswered-tag';
+                tag.textContent = '⏳ 未答';
+                item.querySelector('.q-num').after(tag);
+                wrongIds.add(qid);
+                return;
+            }
             const isCorrect = (userAns === q.ans);
             if (isCorrect) {
                 item.classList.add('correct-highlight');
                 const tag = document.createElement('span');
-                tag.className = 'correct-tag';
+                tag.className = 'tag correct-tag';
                 tag.textContent = '✓ 正确';
                 item.querySelector('.q-num').after(tag);
-                // 从错题本移除
-                if (wrongIds.has(qid)) {
-                    wrongIds.delete(qid);
-                }
+                if (wrongIds.has(qid)) wrongIds.delete(qid);
             } else {
                 item.classList.add('wrong');
                 const tag = document.createElement('span');
-                tag.className = 'wrong-tag';
+                tag.className = 'tag wrong-tag';
                 tag.textContent = '✗ 错误';
                 item.querySelector('.q-num').after(tag);
-                // 加入错题本
                 wrongIds.add(qid);
             }
             updateWrongCount();
             updateErrorBook();
         }
 
-        // 批量标记所有已答题
         function markAll() {
             for (let i = 0; i < finalQuestions.length; i++) {
-                const qid = i + 1;
-                markQuestion(qid);
+                markQuestion(i + 1);
             }
         }
 
@@ -594,11 +614,11 @@
             document.getElementById('errorCountBadge').textContent = wrongIds.size;
         }
 
-        // 更新错题本内容
+        // 更新错题本（含解析）
         function updateErrorBook() {
             const errorList = document.getElementById('errorList');
             if (wrongIds.size === 0) {
-                errorList.innerHTML = '<p style="color:#4d677f; padding:0.4rem 0;">🎉 暂无错题，继续加油！</p>';
+                errorList.innerHTML = '<p style="color:#4d677f; padding:0.4rem 0;">🎉 暂无错题和未答题！</p>';
                 return;
             }
             let html = '';
@@ -608,14 +628,23 @@
                 const userAns = userAnswers[qid - 1];
                 const correctLetter = String.fromCharCode(65 + q.ans);
                 const userLetter = userAns !== null ? String.fromCharCode(65 + userAns) : '未答';
+                const status = userAns === null ? '⏳ 未答' : (userAns === q.ans ? '✓ 正确' : '✗ 错误');
                 html += `
-                    <div style="background:white; border-radius:18px; padding:0.6rem 1rem; border-left:6px solid #c5283d; display:flex; flex-wrap:wrap; align-items:center; gap:0.4rem 1rem;">
-                        <span style="font-weight:700; min-width:2.4rem;">${qid}.</span>
-                        <span style="flex:1;">${q.text}</span>
-                        <span style="background:#f0e6e8; padding:0.1rem 0.8rem; border-radius:30px; font-size:0.85rem;">
-                            你的答案: ${userLetter}  | 正确答案: ${correctLetter}
-                        </span>
-                        <span style="color:#a02030; font-weight:600; font-size:0.8rem;">✗ 错题</span>
+                    <div class="error-item">
+                        <div class="e-header">
+                            <span>${qid}.</span>
+                            <span>${q.subject}</span>
+                            <span style="background:#f0e6e8; padding:0.1rem 0.8rem; border-radius:30px; font-size:0.85rem;">
+                                你的答案: ${userLetter}  | 正确答案: ${correctLetter}
+                            </span>
+                            <span style="font-weight:600; color:${userAns === null ? '#f5a623' : (userAns === q.ans ? '#1f7b4d' : '#c5283d')};">${status}</span>
+                        </div>
+                        <div class="e-question">${q.text}</div>
+                        <div class="e-detail">
+                            <div><span class="label">📌 解析：</span>${q.analysis}</div>
+                            ${userAns !== null && userAns !== q.ans ? `<div class="analysis"><span class="correct-label">✅ 正确思路：</span>${q.analysis}</div>` : ''}
+                            ${userAns === null ? `<div class="analysis"><span style="color:#f5a623;">💡 提示：</span>请作答后查看解析。</div>` : ''}
+                        </div>
                     </div>
                 `;
             }
@@ -635,10 +664,8 @@
             document.getElementById('scoreDisplay').textContent = correct;
             document.getElementById('resultBox').style.display = 'inline-flex';
             markAll();
-            // 显示错题本
             document.getElementById('errorBook').style.display = 'block';
             document.getElementById('errorDetails').open = true;
-            // 滚动到错题本
             document.getElementById('errorBook').scrollIntoView({ behavior: 'smooth', block: 'center' });
         });
 
@@ -653,8 +680,8 @@
             submitted = false;
             wrongIds.clear();
             document.querySelectorAll('.q-item').forEach(item => {
-                item.classList.remove('wrong', 'correct-highlight');
-                const tag = item.querySelector('.wrong-tag, .correct-tag');
+                item.classList.remove('wrong', 'correct-highlight', 'unanswered');
+                const tag = item.querySelector('.tag');
                 if (tag) tag.remove();
             });
             document.getElementById('resultBox').style.display = 'none';
@@ -676,13 +703,12 @@
             }
         });
 
-        // 重练错题 (清空错题本但保留错题标记？这里实现为：清空错题本，保留标记，但可重新作答)
+        // 重练错题
         document.getElementById('retryWrongBtn').addEventListener('click', function() {
             if (wrongIds.size === 0) {
-                alert('当前没有错题！');
+                alert('当前没有错题或未答题！');
                 return;
             }
-            // 清空错题对应的答案，保留错题标记，用户可重新选择
             for (const qid of wrongIds) {
                 const idx = qid - 1;
                 userAnswers[idx] = null;
@@ -691,32 +717,35 @@
                     input.checked = false;
                     input.closest('label')?.classList.remove('selected-option');
                 }
-                // 移除标记样式（保留错误样式？我们保留错误样式，但去掉tag）
                 const item = document.getElementById(`qitem-${qid}`);
                 if (item) {
-                    item.classList.remove('correct-highlight');
-                    // 但保留 wrong 样式，因为还没重新作答
-                    const tag = item.querySelector('.wrong-tag, .correct-tag');
+                    item.classList.remove('correct-highlight', 'wrong', 'unanswered');
+                    const tag = item.querySelector('.tag');
                     if (tag) tag.remove();
-                    // 重新标记为错误（未答状态）
-                    item.classList.add('wrong');
+                    item.classList.add('unanswered');
                     const newTag = document.createElement('span');
-                    newTag.className = 'wrong-tag';
-                    newTag.textContent = '✗ 待重练';
+                    newTag.className = 'tag unanswered-tag';
+                    newTag.textContent = '⏳ 待重练';
                     item.querySelector('.q-num').after(newTag);
                 }
             }
-            // 清空错题本集合（但保留ui标记，让用户重新作答后再次收集）
             wrongIds.clear();
+            // 但未答的仍然需要加入错题本（重练后未答也要记录）
+            // 我们重新扫描所有题目，将未答的加入错题本
+            for (let i = 0; i < finalQuestions.length; i++) {
+                if (userAnswers[i] === null) {
+                    wrongIds.add(i + 1);
+                }
+            }
             updateWrongCount();
             updateErrorBook();
             updateAnsweredCount();
             document.getElementById('resultBox').style.display = 'none';
             submitted = false;
-            alert('错题已清空，请重新作答错题。作答后再次提交即可。');
+            alert('错题已清空，请重新作答。作答后再次提交即可。');
         });
 
-        // 清空错题本 (仅清除记录，不影响试卷)
+        // 清空错题本
         document.getElementById('clearWrongBtn').addEventListener('click', function() {
             if (wrongIds.size === 0) {
                 alert('错题本已是空的。');
@@ -724,10 +753,9 @@
             }
             if (!confirm('确定清空错题本吗？（不会清除试卷答案）')) return;
             wrongIds.clear();
-            // 移除错题标记样式
-            document.querySelectorAll('.q-item.wrong').forEach(item => {
-                item.classList.remove('wrong');
-                const tag = item.querySelector('.wrong-tag');
+            document.querySelectorAll('.q-item.wrong, .q-item.unanswered').forEach(item => {
+                item.classList.remove('wrong', 'unanswered');
+                const tag = item.querySelector('.tag');
                 if (tag) tag.remove();
             });
             updateWrongCount();
@@ -743,7 +771,6 @@
         updateErrorBook();
         document.getElementById('errorBook').style.display = 'none';
 
-        // 如果url有hash #error 则展开错题本
         if (window.location.hash === '#error') {
             document.getElementById('errorBook').style.display = 'block';
             document.getElementById('errorDetails').open = true;
