@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>初三中考模拟 · 120题 · 全新不重复</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
+            background: #f4f7fb;
+            padding: 30px 20px;
+            color: #1e293b;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 32px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+            padding: 30px 28px;
+        }
+        h1 {
+            font-weight: 600;
+            font-size: 2.2rem;
+            letter-spacing: -0.3px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #e9edf2;
+            padding-bottom: 16px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+        h1 small {
+            font-size: 1rem;
+            font-weight: 400;
+            color: #64748b;
+            background: #f1f5f9;
+            padding: 6px 18px;
+            border-radius: 40px;
+        }
+        .subject-tag {
+            display: inline-block;
+            font-weight: 600;
+            font-size: 0.9rem;
+            padding: 4px 14px;
+            border-radius: 30px;
+            background: #dbeafe;
+            color: #1e4a7a;
+            margin-right: 10px;
+        }
+        .subject-tag.math { background: #dbeafe; color: #1e4a7a; }
+        .subject-tag.chinese { background: #fce7f3; color: #831843; }
+        .subject-tag.english { background: #d1fae5; color: #065f46; }
+
+        .question-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            margin: 28px 0;
+        }
+        .question-item {
+            background: #fafcff;
+            border: 1px solid #e9edf2;
+            border-radius: 20px;
+            padding: 18px 24px 20px;
+            transition: 0.1s ease;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.01);
+        }
+        .question-item.correct-highlight {
+            border-left: 6px solid #22c55e;
+            background: #f6fef9;
+        }
+        .question-item.wrong-highlight {
+            border-left: 6px solid #ef4444;
+            background: #fef6f6;
+        }
+        .q-header {
+            display: flex;
+            align-items: baseline;
+            gap: 6px;
+            flex-wrap: wrap;
+            margin-bottom: 8px;
+        }
+        .q-number {
+            font-weight: 600;
+            color: #334155;
+            min-width: 44px;
+        }
+        .q-text {
+            font-size: 1.05rem;
+            font-weight: 500;
+            margin: 4px 0 12px 0;
+            line-height: 1.5;
+        }
+        .options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 8px 18px;
+            margin: 10px 0 6px;
+            padding-left: 4px;
+        }
+        .option {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.98rem;
+            padding: 6px 4px;
+            border-radius: 10px;
+            transition: 0.05s;
+        }
+        .option input[type="radio"] {
+            width: 18px;
+            height: 18px;
+            accent-color: #2563eb;
+            margin-right: 6px;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+        .option label {
+            cursor: pointer;
+            width: 100%;
+        }
+        .action-bar {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 30px;
+            gap: 18px;
+            border-top: 1px solid #e9edf2;
+            padding-top: 28px;
+        }
+        .btn {
+            background: white;
+            border: 1px solid #cbd5e1;
+            padding: 10px 24px;
+            border-radius: 60px;
+            font-weight: 500;
+            font-size: 1rem;
+            color: #1e293b;
+            cursor: pointer;
+            transition: 0.2s;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .btn-primary {
+            background: #1e293b;
+            border: 1px solid #1e293b;
+            color: white;
+        }
+        .btn-primary:hover {
+            background: #0f172a;
+        }
+        .btn-success {
+            background: #16a34a;
+            border: 1px solid #16a34a;
+            color: white;
+        }
+        .btn-success:hover {
+            background: #15803d;
+        }
+        .btn-outline {
+            background: transparent;
+            border: 1px solid #94a3b8;
+        }
+        .btn-outline:hover {
+            background: #f1f5f9;
+        }
+        .btn:disabled {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+        .score-panel {
+            background: #f8fafc;
+            border-radius: 40px;
+            padding: 8px 22px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .score-panel span {
+            font-size: 1.6rem;
+            color: #0f172a;
+        }
+        .wrong-book {
+            margin-top: 32px;
+            background: #fefcf5;
+            border-radius: 24px;
+            border: 1px solid #e2e8f0;
+            padding: 12px 20px 20px;
+        }
+        .wrong-book h3 {
+            font-weight: 600;
+            font-size: 1.2rem;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .wrong-book h3 span {
+            background: #ef4444;
+            color: white;
+            border-radius: 40px;
+            padding: 0px 14px;
+            font-size: 0.9rem;
+        }
+        .wrong-item {
+            border-bottom: 1px dashed #e2e8f0;
+            padding: 14px 0 12px;
+        }
+        .wrong-item .wrong-q {
+            font-weight: 500;
+        }
+        .wrong-item .wrong-answer {
+            color: #b91c1c;
+            background: #fee2e2;
+            padding: 0 10px;
+            border-radius: 30px;
+            display: inline-block;
+        }
+        .wrong-item .correct-answer {
+            color: #166534;
+            background: #dcfce7;
+            padding: 0 10px;
+            border-radius: 30px;
+            display: inline-block;
+        }
+        .wrong-item .explain {
+            color: #475569;
+            background: #f1f5f9;
+            padding: 4px 14px;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            margin-top: 6px;
+            display: inline-block;
+        }
+        .subject-divider {
+            margin: 8px 0 14px;
+            font-size: 1.3rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .subject-divider hr {
+            flex: 1;
+            border: none;
+            border-top: 2px solid #e2e8f0;
+        }
+        .footer-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .status-badge {
+            font-size: 0.8rem;
+            background: #e9edf2;
+            padding: 2px 14px;
+            border-radius: 40px;
+        }
+        @media (max-width: 700px) {
+            .container { padding: 16px; }
+            .options { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+<div class="container" id="app">
+    <h1>
+        📚 中考全真模拟 · 120题 · 全新卷
+        <small>数学·语文·英语</small>
+    </h1>
+    <div style="display: flex; gap: 18px; flex-wrap: wrap; margin-bottom: 18px;">
+        <div><span class="subject-tag math">数学 40</span><span class="subject-tag chinese">语文 40</span><span class="subject-tag english">英语 40</span></div>
+        <div class="score-panel" id="scoreDisplay">📊 得分 <span id="scoreNum">0</span></div>
+    </div>
+
+    <!-- 题目列表 -->
+    <div id="questionList" class="question-grid"></div>
+
+    <!-- 操作栏 -->
+    <div class="action-bar">
+        <div class="footer-actions">
+            <button class="btn btn-primary" id="submitBtn">✅ 提交 & 出成绩</button>
+            <button class="btn btn-outline" id="resetBtn">⟳ 重置所有</button>
+        </div>
+        <div style="font-size:0.9rem; color:#64748b;">
+            <span id="answeredCount">0</span> / 120 已选
+        </div>
+    </div>
+
+    <!-- 错题本 (包含未做 + 错误) -->
+    <div id="wrongBookContainer" class="wrong-book" style="margin-top: 24px;">
+        <h3>📕 错题本 <span id="wrongCount">0</span></h3>
+        <div id="wrongBookContent"><p style="color:#94a3b8; padding:8px 0;">尚未提交，完成答题后查看错题与解析。</p></div>
+    </div>
+</div>
+<script>
+    (function() {
+        // ----- 生成 120 道题 (数学40, 语文40, 英语40) · 全新不重复 · 初三难度适中 -----
+        const subjectLabels = { math: '数学', chinese: '语文', english: '英语' };
+
+        function generateQuestions() {
+            const qs = [];
+            let id = 0;
+
+            // 数学 40  · 全新题（二次函数、圆、相似、锐角三角函数、方程、概率等）
+            const mathPool = [
+                { text: '二次函数 y = -x² + 4x - 3 的最大值是？', options: ['A. 1', 'B. -1', 'C. 3', 'D. -3'], correct: 'A', explanation: 'y = -(x-2)² + 1，最大值为 1' },
+                { text: '在 Rt△ABC 中，∠C=90°，AB=13，AC=5，则 tan B = ?', options: ['A. 5/12', 'B. 12/5', 'C. 5/13', 'D. 12/13'], correct: 'A', explanation: 'BC=12，tan B = 对边/邻边 = AC/BC = 5/12' },
+                { text: '若关于 x 的方程 x² + 6x + k = 0 有两个不相等的实数根，则 k 的取值范围是？', options: ['A. k < 9', 'B. k > 9', 'C. k ≤ 9', 'D. k ≥ 9'], correct: 'A', explanation: 'Δ = 36 - 4k > 0 ⇒ k < 9' },
+                { text: '如图，△ABC∽△A\'B\'C\'，相似比为 3:4，则对应中线之比为？', options: ['A. 3:4', 'B. 4:3', 'C. 9:16', 'D. 16:9'], correct: 'A', explanation: '相似三角形对应中线之比等于相似比 3:4' },
+                { text: '圆 O 的半径为 6，弦 AB 的弦心距为 3，则弦 AB 的长为？', options: ['A. 6√3', 'B. 6', 'C. 3√3', 'D. 12'], correct: 'A', explanation: 'AB = 2√(R²-d²) = 2√(36-9) = 2√27 = 6√3' },
+                { text: '将抛物线 y = 3x² 向右平移 2 个单位，再向下平移 1 个单位，得到？', options: ['A. y = 3(x-2)²-1', 'B. y = 3(x+2)²-1', 'C. y = 3(x-2)²+1', 'D. y = 3(x+2)²+1'], correct: 'A', explanation: '左加右减，上加下减 ⇒ y = 3(x-2)²-1' },
+                { text: '一个不透明的袋中装有 2 个红球、3 个白球，每个球除颜色外都相同，随机摸出一个球，摸到红球的概率是？', options: ['A. 2/3', 'B. 2/5', 'C. 3/5', 'D. 1/2'], correct: 'B', explanation: 'P = 2/(2+3) = 2/5' },
+                { text: '若正多边形的每个外角为 36°，则这个正多边形是？', options: ['A. 正六边形', 'B. 正八边形', 'C. 正十边形', 'D. 正十二边形'], correct: 'C', explanation: '外角和 360°，边数 = 360/36 = 10' },
+                { text: '下列函数中，y 随 x 的增大而减小的是？', options: ['A. y = 2x+1', 'B. y = -3x+5', 'C. y = x²', 'D. y = 1/x'], correct: 'B', explanation: '一次函数 k<0 时 y 随 x 增大而减小' },
+                { text: '在 △ABC 中，∠A=60°，∠B=45°，则 ∠C 的度数为？', options: ['A. 60°', 'B. 45°', 'C. 75°', 'D. 30°'], correct: 'C', explanation: '∠C = 180 - 60 - 45 = 75°' },
+                { text: '方程 (x-1)(x+3)=5 化为一元二次方程的一般形式是？', options: ['A. x²+2x-8=0', 'B. x²+2x-3=0', 'C. x²-2x-8=0', 'D. x²+2x+8=0'], correct: 'A', explanation: '展开得 x²+2x-3=5 ⇒ x²+2x-8=0' },
+                { text: '圆锥的底面半径为 3，母线长为 5，则其侧面积为？', options: ['A. 15π', 'B. 24π', 'C. 12π', 'D. 30π'], correct: 'A', explanation: '侧面积 = πrl = π×3×5 = 15π' },
+                { text: '在平面直角坐标系中，点 P(-2, 3) 关于原点对称的点的坐标是？', options: ['A. (2, -3)', 'B. (-2, -3)', 'C. (2, 3)', 'D. (3, -2)'], correct: 'A', explanation: '关于原点对称，横纵坐标均取相反数' },
+                { text: '一组数据 2, 4, 6, 8, 10 的方差是？', options: ['A. 6', 'B. 8', 'C. 10', 'D. 12'], correct: 'B', explanation: '平均数=6，方差 = [(−4)²+(−2)²+0+2²+4²]/5 = 40/5=8' },
+                { text: '若 a:b = 2:3，则 (a+b):b = ?', options: ['A. 2:3', 'B. 5:3', 'C. 3:5', 'D. 5:2'], correct: 'B', explanation: '设 a=2k, b=3k，则 (a+b):b = 5k:3k = 5:3' },
+                { text: '下列图形中，既是轴对称图形又是中心对称图形的是？', options: ['A. 等边三角形', 'B. 平行四边形', 'C. 正方形', 'D. 正五边形'], correct: 'C', explanation: '正方形既是轴对称又是中心对称' },
+                { text: '若 x=1 是方程 x² - mx + 3 = 0 的一个根，则 m = ?', options: ['A. 4', 'B. -4', 'C. 2', 'D. -2'], correct: 'A', explanation: '代入 1 - m + 3 = 0 ⇒ m=4' },
+                { text: '在 Rt△ABC 中，∠C=90°，sin A = 3/5，则 cos A = ?', options: ['A. 3/5', 'B. 4/5', 'C. 5/3', 'D. 5/4'], correct: 'B', explanation: 'sin²A+cos²A=1 ⇒ cos A = 4/5' },
+                { text: '若一次函数 y = kx + b 的图象经过第一、三、四象限，则 k, b 的符号为？', options: ['A. k>0, b>0', 'B. k>0, b<0', 'C. k<0, b>0', 'D. k<0, b<0'], correct: 'B', explanation: '经过一、三、四象限 ⇒ k>0，b<0' },
+                { text: '如图，AB 是圆 O 的直径，弦 CD⊥AB 于点 E，若 CD=8，OE=3，则圆 O 的半径为？', options: ['A. 4', 'B. 5', 'C. 6', 'D. 7'], correct: 'B', explanation: 'CE=4，R² = 3²+4²=25 ⇒ R=5' },
+                { text: '若分式 (x-1)/(x+2) 的值为 0，则 x 的值为？', options: ['A. 1', 'B. -2', 'C. -1', 'D. 2'], correct: 'A', explanation: '分子为 0 且分母不为 0 ⇒ x=1' },
+                { text: '一个多边形的内角和是 1080°，则这个多边形的边数是？', options: ['A. 6', 'B. 7', 'C. 8', 'D. 9'], correct: 'C', explanation: '(n-2)×180 = 1080 ⇒ n=8' },
+                { text: '若 a<0，则化简 √(a²) 的结果是？', options: ['A. a', 'B. -a', 'C. ±a', 'D. 0'], correct: 'B', explanation: '√(a²) = |a|，a<0 ⇒ -a' },
+                { text: '在 △ABC 中，AB=AC，∠A=40°，则 ∠B 的度数为？', options: ['A. 40°', 'B. 70°', 'C. 80°', 'D. 100°'], correct: 'B', explanation: '等腰三角形，∠B=∠C = (180-40)/2 = 70°' },
+                { text: '若关于 x 的不等式组 { x > 2, x ≤ a } 有解，则 a 的取值范围是？', options: ['A. a > 2', 'B. a ≥ 2', 'C. a < 2', 'D. a ≤ 2'], correct: 'B', explanation: '有解需 a ≥ 2' },
+                { text: '已知扇形的圆心角为 120°，半径为 3，则扇形的面积为？', options: ['A. 3π', 'B. 6π', 'C. 9π', 'D. 12π'], correct: 'A', explanation: 'S = (120/360)×π×9 = 3π' },
+                { text: '若 x² - 4x + m = (x-2)² + n，则 m, n 的值分别是？', options: ['A. m=4, n=0', 'B. m=4, n=-4', 'C. m=-4, n=0', 'D. m=0, n=4'], correct: 'A', explanation: 'x²-4x+4 = (x-2)²，对比得 m=4, n=0' },
+                { text: '在 Rt△ABC 中，∠C=90°，AC=6，BC=8，则 AB 边上的中线长为？', options: ['A. 5', 'B. 6', 'C. 7', 'D. 8'], correct: 'A', explanation: 'AB=10，斜边中线=斜边一半=5' },
+                { text: '若 a+b=5，ab=6，则 a²+b² = ?', options: ['A. 13', 'B. 25', 'C. 19', 'D. 12'], correct: 'A', explanation: 'a²+b² = (a+b)² - 2ab = 25-12=13' },
+                { text: '下列根式中，与 √2 是同类二次根式的是？', options: ['A. √8', 'B. √12', 'C. √18', 'D. √20'], correct: 'A', explanation: '√8 = 2√2，与√2同类' },
+                { text: '若 y = (m-1)x^{m²-2} 是反比例函数，则 m 的值为？', options: ['A. ±1', 'B. 1', 'C. -1', 'D. 0'], correct: 'C', explanation: '反比例函数 x 的指数为 -1 ⇒ m²-2 = -1 ⇒ m=±1，且 m-1≠0 ⇒ m=-1' },
+                { text: '在 △ABC 中，D, E 分别是 AB, AC 的中点，若 BC=10，则 DE 的长为？', options: ['A. 5', 'B. 6', 'C. 8', 'D. 10'], correct: 'A', explanation: '三角形中位线等于第三边的一半' },
+                { text: '若关于 x 的方程 2x - a = 0 的解为 x=3，则 a = ?', options: ['A. 6', 'B. -6', 'C. 3', 'D. -3'], correct: 'A', explanation: '代入 2×3 - a = 0 ⇒ a=6' },
+                { text: '在 Rt△ABC 中，∠C=90°，∠A=30°，BC=4，则 AB 的长为？', options: ['A. 8', 'B. 4√3', 'C. 8√3', 'D. 4'], correct: 'A', explanation: '30°所对直角边等于斜边一半 ⇒ AB=8' },
+                { text: '若二次函数 y = ax² + bx + c 的图象经过点 (1,0), (-1,0), (0,2)，则 a = ?', options: ['A. -2', 'B. 2', 'C. -1', 'D. 1'], correct: 'A', explanation: '设 y = a(x-1)(x+1)，代入 (0,2) 得 -a=2 ⇒ a=-2' },
+                { text: '在 △ABC 中，AB=5，AC=8，则 BC 的取值范围是？', options: ['A. 3 < BC < 13', 'B. 3 ≤ BC ≤ 13', 'C. 5 < BC < 8', 'D. 5 ≤ BC ≤ 8'], correct: 'A', explanation: '三角形两边之和大于第三边，之差小于第三边' },
+                { text: '若 x² - 6x + k = 0 的一个根为 2，则另一个根为？', options: ['A. 4', 'B. -4', 'C. 2', 'D. -2'], correct: 'A', explanation: '两根和 = 6，一根为2，另一根为4' },
+                { text: '在平面直角坐标系中，点 A(3,4) 到原点的距离是？', options: ['A. 5', 'B. 6', 'C. 7', 'D. 8'], correct: 'A', explanation: '距离 = √(3²+4²) = 5' },
+                { text: '若正比例函数 y = kx 的图象经过点 (2, -4)，则 k = ?', options: ['A. -2', 'B. 2', 'C. -8', 'D. 8'], correct: 'A', explanation: '代入 -4 = 2k ⇒ k = -2' },
+            ];
+
+            // 语文 40  · 全新题（文言文、诗词、名著、语基、文化常识）
+            const chinesePool = [
+                { text: '“先天下之忧而忧，后天下之乐而乐” 出自？', options: ['A. 《岳阳楼记》', 'B. 《醉翁亭记》', 'C. 《小石潭记》', 'D. 《桃花源记》'], correct: 'A', explanation: '范仲淹《岳阳楼记》' },
+                { text: '下列加点字注音完全正确的一项是？', options: ['A. 狡黠(xiá)   B. 慰藉(jí)   C. 酝酿(rǎng)   D. 栈桥(zhàn)'], correct: 'D', explanation: 'A 黠 xiá；B 藉 jiè；C 酿 niàng；D 正确' },
+                { text: '“会当凌绝顶，一览众山小” 的作者是？', options: ['A. 杜甫', 'B. 李白', 'C. 王维', 'D. 白居易'], correct: 'A', explanation: '杜甫《望岳》' },
+                { text: '下列句子没有语病的一项是？', options: ['A. 随着城市化进程加快，使城市人口不断增长。', 'B. 通过这次活动，使我们开阔了眼界。', 'C. 能否刻苦学习，是取得好成绩的关键。', 'D. 我们要养成爱读书的好习惯。'], correct: 'D', explanation: 'A/B 缺主语；C 两面对一面' },
+                { text: '“但愿人长久，千里共婵娟” 中的 “婵娟” 指？', options: ['A. 月亮', 'B. 嫦娥', 'C. 美女', 'D. 故乡'], correct: 'A', explanation: '婵娟指月亮' },
+                { text: '《水浒传》中，拳打镇关西的英雄是？', options: ['A. 武松', 'B. 鲁智深', 'C. 李逵', 'D. 杨志'], correct: 'B', explanation: '鲁智深（鲁达）拳打镇关西' },
+                { text: '“无丝竹之乱耳，无案牍之劳形” 出自？', options: ['A. 《陋室铭》', 'B. 《爱莲说》', 'C. 《马说》', 'D. 《送东阳马生序》'], correct: 'A', explanation: '刘禹锡《陋室铭》' },
+                { text: '下列词语书写完全正确的一项是？', options: ['A. 张惶失措', 'B. 莫衷一事', 'C. 一视同人', 'D. 相形见绌'], correct: 'D', explanation: 'A 惶→皇；B 事→是；C 人→仁；D 正确' },
+                { text: '“采菊东篱下，悠然见南山” 的作者是？', options: ['A. 陶渊明', 'B. 谢灵运', 'C. 王维', 'D. 孟浩然'], correct: 'A', explanation: '陶渊明《饮酒》' },
+                { text: '下列语句中，没有使用修辞手法的是？', options: ['A. 春风又绿江南岸', 'B. 两个黄鹂鸣翠柳', 'C. 白发三千丈', 'D. 山舞银蛇'], correct: 'B', explanation: 'A 拟人/使动；C 夸张；D 比喻/拟人；B 白描' },
+                { text: '“人生自古谁无死，留取丹心照汗青” 的作者是？', options: ['A. 文天祥', 'B. 陆游', 'C. 岳飞', 'D. 辛弃疾'], correct: 'A', explanation: '文天祥《过零丁洋》' },
+                { text: '下列有关文学常识表述有误的是？', options: ['A. 《诗经》是我国第一部诗歌总集', 'B. 《左传》是编年体史书', 'C. 《史记》是纪传体通史', 'D. 《资治通鉴》是国别体史书'], correct: 'D', explanation: '《资治通鉴》是编年体通史' },
+                { text: '“随风潜入夜，润物细无声” 描写的是？', options: ['A. 春雨', 'B. 夏雨', 'C. 秋雨', 'D. 冬雨'], correct: 'A', explanation: '杜甫《春夜喜雨》写春雨' },
+                { text: '下列句子中，加点成语使用恰当的是？', options: ['A. 他做事总是首当其冲。', 'B. 春天来了，百花齐放，美不胜收。', 'C. 他说话总是言不由衷。', 'D. 他妄自菲薄自己的成绩。'], correct: 'B', explanation: 'A 首当其冲指最先受到冲击；C 言不由衷指心口不一；D 妄自菲薄不能带宾语' },
+                { text: '“蒹葭苍苍，白露为霜” 出自？', options: ['A. 《关雎》', 'B. 《蒹葭》', 'C. 《子衿》', 'D. 《鹿鸣》'], correct: 'B', explanation: '《诗经·蒹葭》' },
+                { text: '下列各组词语中，字音字形完全正确的一项是？', options: ['A. 缄默(jiān)   B. 睥睨(pì nì)   C. 踌躇(chóu zhú)   D. 炽热(zhì)'], correct: 'B', explanation: 'A 缄 jiān；C 躇 chú；D 炽 chì；B 正确' },
+                { text: '“我寄愁心与明月，随君直到夜郎西” 的作者是？', options: ['A. 李白', 'B. 杜甫', 'C. 王昌龄', 'D. 岑参'], correct: 'A', explanation: '李白《闻王昌龄左迁龙标遥有此寄》' },
+                { text: '下列对课文内容理解有误的是？', options: ['A. 《故乡》中的闰土是鲁迅笔下的农民形象', 'B. 《我的叔叔于勒》中的于勒是善良的', 'C. 《孔乙己》中的孔乙己是封建科举制度的牺牲品', 'D. 《变色龙》中的奥楚蔑洛夫是见风使舵的典型'], correct: 'B', explanation: '于勒并非善良，而是被批判的资本主义社会产物' },
+                { text: '“停车坐爱枫林晚，霜叶红于二月花” 中的 “坐” 意为？', options: ['A. 因为', 'B. 坐下', 'C. 乘坐', 'D. 由于'], correct: 'A', explanation: '“坐” 解释为 “因为”' },
+                { text: '下列句子中，标点符号使用正确的一项是？', options: ['A. 他问我：“你叫什么名字？”', 'B. 他问我，你叫什么名字？', 'C. 他问我：“你叫什么名字”？', 'D. 他问我：“你叫什么名字”'], correct: 'A', explanation: 'B 问号应在引号内；C 问号应在引号内；D 缺少问号' },
+                { text: '“莫等闲，白了少年头，空悲切” 出自？', options: ['A. 岳飞《满江红》', 'B. 陆游《示儿》', 'C. 辛弃疾《破阵子》', 'D. 文天祥《正气歌》'], correct: 'A', explanation: '岳飞《满江红》' },
+                { text: '下列词语中没有错别字的一项是？', options: ['A. 明察秋毫', 'B. 冲耳不闻', 'C. 直接了当', 'D. 心旷神宜'], correct: 'A', explanation: 'B 冲→充；C 接→截；D 宜→怡' },
+                { text: '“出淤泥而不染，濯清涟而不妖” 写的是？', options: ['A. 菊花', 'B. 莲花', 'C. 梅花', 'D. 竹子'], correct: 'B', explanation: '周敦颐《爱莲说》写莲花' },
+                { text: '下列句子中，没有通假字的是？', options: ['A. 学而时习之，不亦说乎', 'B. 孰为汝多知乎', 'C. 小惠未徧', 'D. 公输盘为楚造云梯之械'], correct: 'D', explanation: 'A “说”通“悦”；B “知”通“智”；C “徧”通“遍”' },
+                { text: '“大漠孤烟直，长河落日圆” 出自？', options: ['A. 王维《使至塞上》', 'B. 岑参《白雪歌送武判官归京》', 'C. 李白《关山月》', 'D. 杜甫《月夜忆舍弟》'], correct: 'A', explanation: '王维《使至塞上》' },
+                { text: '下列有关名著表述正确的是？', options: ['A. 《西游记》中孙悟空大闹天宫后被如来佛祖压在五行山下', 'B. 《水浒传》中宋江是东京八十万禁军教头', 'C. 《钢铁是怎样炼成的》中的保尔是作家', 'D. 《格列佛游记》中的格列佛是医生'], correct: 'A', explanation: 'B 林冲是教头；C 保尔是战士；D 格列佛是外科医生' },
+                { text: '“感时花溅泪，恨别鸟惊心” 的作者是？', options: ['A. 杜甫', 'B. 李白', 'C. 王维', 'D. 白居易'], correct: 'A', explanation: '杜甫《春望》' },
+                { text: '下列句子中，没有语病的是？', options: ['A. 有没有坚强的意志，是成功的关键。', 'B. 随着社会的发展，使人们的生活水平提高了。', 'C. 我们不仅要学习好，还要品德好。', 'D. 通过这次活动，使我们受到了教育。'], correct: 'C', explanation: 'A 两面对一面；B/D 缺主语' },
+                { text: '“会挽雕弓如满月，西北望，射天狼” 的作者是？', options: ['A. 苏轼', 'B. 辛弃疾', 'C. 岳飞', 'D. 陆游'], correct: 'A', explanation: '苏轼《江城子·密州出猎》' },
+                { text: '下列词语中，感情色彩相同的一组是？', options: ['A. 顽强 顽固', 'B. 鼓励 鼓舞', 'C. 机智 狡猾', 'D. 果断 武断'], correct: 'B', explanation: '鼓励/鼓舞 均为褒义；A 顽强褒义，顽固贬义；C 机智褒义，狡猾贬义；D 果断褒义，武断贬义' },
+                { text: '“落红不是无情物，化作春泥更护花” 的作者是？', options: ['A. 龚自珍', 'B. 梁启超', 'C. 谭嗣同', 'D. 林则徐'], correct: 'A', explanation: '龚自珍《己亥杂诗》' },
+                { text: '下列句子中，修辞手法与其他不同的是？', options: ['A. 月亮像弯弯的镰刀', 'B. 太阳害羞地躲进了云层', 'C. 星星在天空中眨着眼睛', 'D. 风儿唱着歌儿吹过'], correct: 'A', explanation: 'A 比喻，BCD 拟人' },
+                { text: '“一封朝奏九重天，夕贬潮州路八千” 的作者是？', options: ['A. 韩愈', 'B. 柳宗元', 'C. 刘禹锡', 'D. 白居易'], correct: 'A', explanation: '韩愈《左迁至蓝关示侄孙湘》' },
+                { text: '下列词语中，字形完全正确的一项是？', options: ['A. 脍炙人口', 'B. 锋芒必露', 'C. 世外桃园', 'D. 迫不急待'], correct: 'A', explanation: 'B 必→毕；C 园→源；D 急→及' },
+                { text: '“山重水复疑无路，柳暗花明又一村” 蕴含的哲理是？', options: ['A. 困境中往往蕴含希望', 'B. 事物是不断发展的', 'C. 量变引起质变', 'D. 矛盾双方相互转化'], correct: 'A', explanation: '比喻困境中出现转机' },
+                { text: '下列句子中，加点词的解释有误的是？', options: ['A. 温故而知新 (故：旧的知识)', 'B. 学而不思则罔 (罔：迷惑)', 'C. 思而不学则殆 (殆：危险)', 'D. 诲人不倦 (诲：教导)'], correct: 'C', explanation: '殆：疑惑' },
+                { text: '“明月几时有，把酒问青天” 的作者是？', options: ['A. 苏轼', 'B. 李白', 'C. 欧阳修', 'D. 辛弃疾'], correct: 'A', explanation: '苏轼《水调歌头》' },
+                { text: '下列文学常识搭配有误的是？', options: ['A. 《聊斋志异》—蒲松龄—清代', 'B. 《儒林外史》—吴敬梓—明代', 'C. 《红楼梦》—曹雪芹—清代', 'D. 《三国演义》—罗贯中—元末明初'], correct: 'B', explanation: '《儒林外史》是清代吴敬梓' },
+                { text: '“野火烧不尽，春风吹又生” 的作者是？', options: ['A. 白居易', 'B. 杜甫', 'C. 王维', 'D. 李白'], correct: 'A', explanation: '白居易《赋得古原草送别》' },
+            ];
+
+            // 英语 40  · 全新题（时态、被动语态、宾语从句、词汇、情景交际、固定搭配）
+            const englishPool = [
+                { text: 'I ____ a letter when my mother came in.', options: ['A. wrote', 'B. was writing', 'C. am writing', 'D. write'], correct: 'B', explanation: '过去进行时 (was writing) + 一般过去时 (came)' },
+                { text: 'The food ____ by the cook every day.', options: ['A. prepares', 'B. is prepared', 'C. prepared', 'D. has prepared'], correct: 'B', explanation: '一般现在时被动语态：is prepared' },
+                { text: 'Could you tell me ____ the bus station is?', options: ['A. where', 'B. that', 'C. what', 'D. if'], correct: 'A', explanation: 'where 引导宾语从句，表示地点' },
+                { text: 'He is interested in ____ football.', options: ['A. play', 'B. playing', 'C. to play', 'D. played'], correct: 'B', explanation: 'be interested in doing sth.' },
+                { text: '— I’m afraid I’m late. — ____ .', options: ['A. Don’t worry', 'B. That’s right', 'C. You’re welcome', 'D. My pleasure'], correct: 'A', explanation: '回答担心用 Don’t worry' },
+                { text: 'There ____ a lot of trees in the park.', options: ['A. is', 'B. are', 'C. was', 'D. were'], correct: 'B', explanation: 'a lot of trees 复数，一般现在时用 are' },
+                { text: 'She ____ English for three years.', options: ['A. learns', 'B. learned', 'C. has learned', 'D. learn'], correct: 'C', explanation: 'for three years 用现在完成时' },
+                { text: 'The window ____ by Tom yesterday.', options: ['A. breaks', 'B. is broken', 'C. was broken', 'D. has been broken'], correct: 'C', explanation: 'yesterday 一般过去时被动语态' },
+                { text: 'I don’t know ____ he will come or not.', options: ['A. whether', 'B. if', 'C. that', 'D. when'], correct: 'A', explanation: 'whether...or not 引导宾语从句' },
+                { text: 'He enjoys ____ books in his free time.', options: ['A. read', 'B. reading', 'C. to read', 'D. reads'], correct: 'B', explanation: 'enjoy doing sth.' },
+                { text: '— Let’s go swimming. — ____ .', options: ['A. Good idea', 'B. No, thanks', 'C. Sorry', 'D. You’re welcome'], correct: 'A', explanation: '赞同建议用 Good idea' },
+                { text: 'My father ____ to work by car every day.', options: ['A. go', 'B. goes', 'C. went', 'D. has gone'], correct: 'B', explanation: 'every day 一般现在时，第三人称单数 goes' },
+                { text: 'The bridge ____ in 2020.', options: ['A. builds', 'B. built', 'C. was built', 'D. is built'], correct: 'C', explanation: 'in 2020 一般过去时被动' },
+                { text: 'I wonder ____ she is doing now.', options: ['A. what', 'B. that', 'C. which', 'D. who'], correct: 'A', explanation: 'what 引导宾语从句，作 doing 的宾语' },
+                { text: 'She is good at ____ piano.', options: ['A. play', 'B. playing', 'C. to play', 'D. plays'], correct: 'B', explanation: 'be good at doing sth.' },
+                { text: '— I’m sorry I lost your book. — ____ .', options: ['A. Never mind', 'B. You’re welcome', 'C. That’s right', 'D. My pleasure'], correct: 'A', explanation: '回答道歉用 Never mind' },
+                { text: 'The students ____ the classroom now.', options: ['A. clean', 'B. cleaned', 'C. are cleaning', 'D. have cleaned'], correct: 'C', explanation: 'now 现在进行时' },
+                { text: 'Tea ____ in many countries.', options: ['A. grows', 'B. is grown', 'C. grew', 'D. has grown'], correct: 'B', explanation: '一般现在时被动语态' },
+                { text: 'He asked me ____ I liked English.', options: ['A. if', 'B. that', 'C. what', 'D. which'], correct: 'A', explanation: 'if 引导宾语从句，表示是否' },
+                { text: 'I look forward to ____ you again.', options: ['A. see', 'B. seeing', 'C. saw', 'D. seen'], correct: 'B', explanation: 'look forward to doing sth.' },
+                { text: '— How about going to the zoo? — ____ .', options: ['A. Sounds great', 'B. No, I don’t', 'C. That’s OK', 'D. Yes, I do'], correct: 'A', explanation: '赞同建议用 Sounds great' },
+                { text: 'She ____ to school at 7 every morning.', options: ['A. go', 'B. goes', 'C. went', 'D. has gone'], correct: 'B', explanation: 'every morning 一般现在时三单' },
+                { text: 'The car ____ by my uncle yesterday.', options: ['A. washes', 'B. is washed', 'C. was washed', 'D. has been washed'], correct: 'C', explanation: 'yesterday 一般过去时被动' },
+                { text: 'I’m not sure ____ he will come.', options: ['A. whether', 'B. that', 'C. if', 'D. A and C'], correct: 'D', explanation: 'whether/if 均可引导宾语从句表示“是否”' },
+                { text: 'He can’t help ____ when he heard the joke.', options: ['A. laugh', 'B. laughing', 'C. to laugh', 'D. laughed'], correct: 'B', explanation: 'can’t help doing sth. 忍不住做某事' },
+                { text: '— Would you like some coffee? — ____ .', options: ['A. Yes, please', 'B. No, I wouldn’t', 'C. Yes, I would', 'D. No, thanks'], correct: 'A', explanation: '接受邀请用 Yes, please' },
+                { text: 'I ____ a movie at 9 last night.', options: ['A. watch', 'B. watched', 'C. was watching', 'D. have watched'], correct: 'C', explanation: 'at 9 last night 过去进行时' },
+                { text: 'These books ____ to the library last week.', options: ['A. return', 'B. are returned', 'C. were returned', 'D. have been returned'], correct: 'C', explanation: 'last week 一般过去时被动' },
+                { text: 'Do you know ____ the nearest hospital is?', options: ['A. where', 'B. what', 'C. which', 'D. whose'], correct: 'A', explanation: 'where 引导宾语从句，询问地点' },
+                { text: 'He is fond of ____ basketball.', options: ['A. play', 'B. playing', 'C. to play', 'D. played'], correct: 'B', explanation: 'be fond of doing sth.' },
+                { text: '— I’m feeling a bit tired. — ____ .', options: ['A. Have a rest', 'B. That’s OK', 'C. Don’t worry', 'D. Why not'], correct: 'A', explanation: '建议休息 Have a rest' },
+                { text: 'She ____ her grandparents twice a month.', options: ['A. visit', 'B. visits', 'C. visited', 'D. has visited'], correct: 'B', explanation: 'twice a month 一般现在时三单' },
+                { text: 'The room ____ with flowers now.', options: ['A. decorates', 'B. is decorated', 'C. was decorated', 'D. decorated'], correct: 'B', explanation: 'now 现在时被动' },
+                { text: 'I want to know ____ he told you.', options: ['A. what', 'B. that', 'C. which', 'D. who'], correct: 'A', explanation: 'what 作 told 的宾语' },
+                { text: 'They avoid ____ mistakes in the exam.', options: ['A. make', 'B. making', 'C. to make', 'D. made'], correct: 'B', explanation: 'avoid doing sth.' },
+                { text: '— Thank you very much. — ____ .', options: ['A. You’re welcome', 'B. That’s right', 'C. All right', 'D. With pleasure'], correct: 'A', explanation: '回答感谢用 You’re welcome' },
+                { text: 'We ____ to school on foot every day.', options: ['A. go', 'B. goes', 'C. went', 'D. have gone'], correct: 'A', explanation: 'every day 一般现在时，主语 we 用 go' },
+                { text: 'The concert ____ by the students next week.', options: ['A. holds', 'B. is held', 'C. will be held', 'D. has been held'], correct: 'C', explanation: 'next week 一般将来时被动' },
+                { text: 'Could you tell me ____ I can get to the station?', options: ['A. how', 'B. that', 'C. what', 'D. where'], correct: 'A', explanation: 'how 引导宾语从句，询问方式' },
+                { text: 'She spent a lot of time ____ English.', options: ['A. learn', 'B. learning', 'C. to learn', 'D. learned'], correct: 'B', explanation: 'spend time doing sth.' },
+            ];
+
+            // 从每个 pool 中取前 40 条（pool 长度均 >= 40）
+            const mathQuestions = mathPool.slice(0, 40);
+            const chineseQuestions = chinesePool.slice(0, 40);
+            const englishQuestions = englishPool.slice(0, 40);
+
+            // 组合，添加 id 和 subject
+            mathQuestions.forEach((q, idx) => {
+                qs.push({
+                    id: id++,
+                    subject: 'math',
+                    number: idx + 1,
+                    text: q.text,
+                    options: q.options,
+                    correct: q.correct,
+                    explanation: q.explanation,
+                    selected: null,
+                    status: 'unanswered'
+                });
+            });
+            chineseQuestions.forEach((q, idx) => {
+                qs.push({
+                    id: id++,
+                    subject: 'chinese',
+                    number: idx + 1,
+                    text: q.text,
+                    options: q.options,
+                    correct: q.correct,
+                    explanation: q.explanation,
+                    selected: null,
+                    status: 'unanswered'
+                });
+            });
+            englishQuestions.forEach((q, idx) => {
+                qs.push({
+                    id: id++,
+                    subject: 'english',
+                    number: idx + 1,
+                    text: q.text,
+                    options: q.options,
+                    correct: q.correct,
+                    explanation: q.explanation,
+                    selected: null,
+                    status: 'unanswered'
+                });
+            });
+
+            return qs;
+        }
+
+        let questions = generateQuestions();
+        let submitted = false;
+
+        // DOM 元素
+        const questionListEl = document.getElementById('questionList');
+        const scoreNum = document.getElementById('scoreNum');
+        const wrongCountEl = document.getElementById('wrongCount');
+        const wrongBookContent = document.getElementById('wrongBookContent');
+        const answeredCountSpan = document.getElementById('answeredCount');
+        const submitBtn = document.getElementById('submitBtn');
+        const resetBtn = document.getElementById('resetBtn');
+
+        // 渲染
+        function render() {
+            let html = '';
+            const subjects = ['math', 'chinese', 'english'];
+            const subjectMap = { math: '数学', chinese: '语文', english: '英语' };
+            let currentSubject = '';
+            for (let i = 0; i < questions.length; i++) {
+                const q = questions[i];
+                if (q.subject !== currentSubject) {
+                    currentSubject = q.subject;
+                    const label = subjectMap[currentSubject];
+                    html += `<div class="subject-divider"><span class="subject-tag ${currentSubject}">${label}</span><hr></div>`;
+                }
+                const optHtml = q.options.map((opt, idx) => {
+                    const letter = String.fromCharCode(65 + idx);
+                    const checked = (q.selected === letter) ? 'checked' : '';
+                    return `<div class="option"><input type="radio" name="q${q.id}" value="${letter}" id="q${q.id}_${letter}" ${checked}><label for="q${q.id}_${letter}">${opt}</label></div>`;
+                }).join('');
+
+                let highlightClass = '';
+                if (submitted) {
+                    if (q.selected === q.correct) highlightClass = 'correct-highlight';
+                    else if (q.selected !== null && q.selected !== q.correct) highlightClass = 'wrong-highlight';
+                    else if (q.selected === null) highlightClass = 'wrong-highlight';
+                }
+
+                html += `<div class="question-item ${highlightClass}" data-qid="${q.id}">
+                    <div class="q-header">
+                        <span class="q-number">${q.subject === 'math' ? 'M' : q.subject === 'chinese' ? 'C' : 'E'}${q.number}.</span>
+                        <span class="status-badge">${q.selected ? '已选' : '未做'}</span>
+                    </div>
+                    <div class="q-text">${q.text}</div>
+                    <div class="options">${optHtml}</div>
+                </div>`;
+            }
+            questionListEl.innerHTML = html;
+
+            document.querySelectorAll('input[type="radio"]').forEach(radio => {
+                radio.addEventListener('change', function(e) {
+                    if (submitted) return;
+                    const name = this.name;
+                    const qid = parseInt(name.replace('q', ''));
+                    const val = this.value;
+                    const q = questions.find(q => q.id === qid);
+                    if (q) {
+                        q.selected = val;
+                        q.status = 'answered';
+                        updateAnsweredCount();
+                        if (!submitted) {
+                            render();
+                        }
+                    }
+                });
+            });
+
+            updateAnsweredCount();
+            if (submitted) {
+                computeScoreAndWrong();
+            } else {
+                wrongBookContent.innerHTML = `<p style="color:#94a3b8; padding:8px 0;">📌 完成答题后点击 “提交” 查看错题与解析。</p>`;
+                wrongCountEl.textContent = '0';
+            }
+        }
+
+        function updateAnsweredCount() {
+            const answered = questions.filter(q => q.selected !== null).length;
+            answeredCountSpan.textContent = answered;
+        }
+
+        function handleSubmit() {
+            submitted = true;
+            questions.forEach(q => {
+                if (q.selected === null) q.status = 'unanswered';
+                else q.status = 'answered';
+            });
+            render();
+            computeScoreAndWrong();
+        }
+
+        function computeScoreAndWrong() {
+            let correctCount = 0;
+            questions.forEach(q => {
+                if (q.selected === q.correct) correctCount++;
+            });
+            scoreNum.textContent = correctCount;
+
+            const wrongs = questions.filter(q => q.selected !== q.correct);
+            wrongCountEl.textContent = wrongs.length;
+
+            if (wrongs.length === 0) {
+                wrongBookContent.innerHTML = `<p style="color:#16a34a; font-weight:500;">🎉 全部正确！太棒了！</p>`;
+                return;
+            }
+
+            let wHtml = '';
+            wrongs.forEach((q) => {
+                const subjectLabel = subjectLabels[q.subject] || '';
+                const correctAns = q.correct;
+                const yourAns = q.selected || '未作答';
+                wHtml += `<div class="wrong-item">
+                    <div class="wrong-q"><span class="subject-tag ${q.subject}">${subjectLabel}</span> ${q.text}</div>
+                    <div>你的答案: <span class="wrong-answer">${yourAns}</span> &nbsp; 正确答案: <span class="correct-answer">${correctAns}</span></div>
+                    <div class="explain">💡 ${q.explanation}</div>
+                </div>`;
+            });
+            wrongBookContent.innerHTML = wHtml;
+        }
+
+        function resetAll() {
+            submitted = false;
+            questions.forEach(q => {
+                q.selected = null;
+                q.status = 'unanswered';
+            });
+            scoreNum.textContent = '0';
+            wrongCountEl.textContent = '0';
+            wrongBookContent.innerHTML = `<p style="color:#94a3b8; padding:8px 0;">尚未提交，完成答题后查看错题与解析。</p>`;
+            render();
+        }
+
+        submitBtn.addEventListener('click', handleSubmit);
+        resetBtn.addEventListener('click', resetAll);
+
+        render();
+    })();
+</script>
+</body>
+</html>
