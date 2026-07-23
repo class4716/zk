@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>初三中考 · 120题全科冲刺（强化版）</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            background: #f5f9fc;
+            font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
+            padding: 20px 10px;
+            color: #1e2b3a;
+        }
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 32px;
+            padding: 30px 25px 40px;
+            box-shadow: 0 20px 40px -12px rgba(0,20,40,0.25);
+        }
+        h1 {
+            font-size: 2.1rem;
+            font-weight: 600;
+            border-left: 8px solid #2a7de1;
+            padding-left: 18px;
+            margin-bottom: 10px;
+            color: #0b2a44;
+        }
+        .subhead {
+            color: #3b5e7a;
+            margin-left: 26px;
+            margin-bottom: 30px;
+            font-weight: 400;
+            border-bottom: 1px solid #dce7f0;
+            padding-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+        .stats {
+            background: #eaf1fb;
+            padding: 6px 20px;
+            border-radius: 40px;
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+        .section-tag {
+            background: #d4e2f5;
+            padding: 4px 14px;
+            border-radius: 30px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #1f4a7a;
+            display: inline-block;
+            margin: 20px 0 12px 0;
+        }
+        .question-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin: 18px 0 20px;
+        }
+        .question-item {
+            background: #ffffff;
+            border: 1px solid #dfe9f2;
+            border-radius: 20px;
+            padding: 18px 22px 16px;
+            transition: 0.1s ease;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+        }
+        .question-item:hover {
+            border-color: #b6cee8;
+            background: #fafcff;
+        }
+        .q-header {
+            display: flex;
+            gap: 6px;
+            font-weight: 600;
+            color: #1a3d62;
+            margin-bottom: 10px;
+            font-size: 1rem;
+            align-items: baseline;
+        }
+        .q-num {
+            background: #dce9f7;
+            border-radius: 30px;
+            padding: 0 12px;
+            font-size: 0.8rem;
+            line-height: 1.8;
+            color: #1f4a7a;
+        }
+        .q-text {
+            font-weight: 500;
+            margin-bottom: 12px;
+            padding-left: 4px;
+            line-height: 1.5;
+        }
+        .options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px 40px;
+            padding-left: 8px;
+            margin-bottom: 10px;
+        }
+        .options label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 400;
+            cursor: pointer;
+            transition: 0.1s;
+        }
+        .options input[type="radio"] {
+            width: 18px;
+            height: 18px;
+            accent-color: #2a7de1;
+            cursor: pointer;
+        }
+        .answer-area {
+            margin-top: 14px;
+            padding: 12px 16px;
+            background: #f2f8ff;
+            border-radius: 16px;
+            display: none;
+            border-left: 4px solid #2a7de1;
+        }
+        .answer-area.show {
+            display: block;
+        }
+        .answer-area .correct {
+            font-weight: 600;
+            color: #0f6b3a;
+        }
+        .answer-area .wrong {
+            font-weight: 600;
+            color: #b13a3a;
+        }
+        .answer-area .explain {
+            margin-top: 6px;
+            color: #1f3d5a;
+            background: #e7f0fa;
+            padding: 8px 14px;
+            border-radius: 30px;
+            font-size: 0.92rem;
+        }
+        .action-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 14px 20px;
+            margin: 32px 0 20px;
+            justify-content: center;
+        }
+        .btn {
+            background: white;
+            border: 1px solid #b8cfe0;
+            padding: 12px 34px;
+            border-radius: 60px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: 0.15s;
+            color: #1f405e;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+        .btn-primary {
+            background: #1f4f7a;
+            border: 1px solid #1f4f7a;
+            color: white;
+            box-shadow: 0 6px 12px -6px #1f4f7a60;
+        }
+        .btn-primary:hover {
+            background: #0f3b60;
+            transform: scale(0.98);
+        }
+        .btn-outline {
+            background: transparent;
+            border: 1px solid #2a7de1;
+            color: #1f4f7a;
+        }
+        .btn-outline:hover {
+            background: #e5effb;
+        }
+        .score-panel {
+            background: #e3eefa;
+            border-radius: 40px;
+            padding: 16px 28px;
+            margin: 20px 0 10px;
+            text-align: center;
+            font-size: 1.4rem;
+            font-weight: 600;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: baseline;
+            gap: 20px;
+        }
+        .score-panel span {
+            background: white;
+            padding: 4px 22px;
+            border-radius: 60px;
+            color: #0b2a44;
+        }
+        .wrongbook {
+            background: #fcf3f0;
+            border: 1px solid #f3d7d0;
+            border-radius: 28px;
+            padding: 20px 24px;
+            margin: 30px 0 10px;
+        }
+        .wrongbook h3 {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #8f3b2b;
+            margin-bottom: 16px;
+        }
+        .wrong-item {
+            border-bottom: 1px dashed #e1cbc4;
+            padding: 14px 0;
+        }
+        .wrong-item:last-child {
+            border: none;
+        }
+        .footnote {
+            text-align: right;
+            color: #6a7f94;
+            margin-top: 20px;
+            font-size: 0.85rem;
+        }
+        @media (max-width: 600px) {
+            .container { padding: 16px; }
+            .options { gap: 10px; }
+        }
+    </style>
+</head>
+<body>
+<div class="container" id="app">
+    <h1>📐 中考全真 · 120题闯关（强化）</h1>
+    <div class="subhead">
+        <span>📚 数学·语文·英语  (初三专项)</span>
+        <span class="stats" id="progressStats">⚡ 已选 0 / 120</span>
+    </div>
+
+    <div id="questionList" class="question-grid"></div>
+
+    <div class="action-bar">
+        <button class="btn btn-primary" id="submitBtn">✅ 提交 & 批改</button>
+        <button class="btn btn-outline" id="resetBtn">🔄 重新作答</button>
+        <button class="btn btn-outline" id="showWrongBtn">📖 错题本</button>
+    </div>
+
+    <div id="scorePanel" class="score-panel" style="display:none;">
+        <span>🏆 得分</span>
+        <span id="scoreDisplay">0</span>
+        <span style="font-weight:400; font-size:1rem;">/ 120</span>
+    </div>
+
+    <div id="wrongBookContainer" class="wrongbook" style="display:none;">
+        <h3>📕 错题本 · 含未做/错误</h3>
+        <div id="wrongList"></div>
+    </div>
+    <div class="footnote">* 未作答题目自动归入错题本，并显示解析</div>
+</div>
+
+<script>
+    (function(){
+        // ---------- 生成120道题 · 强化初三内容 ----------
+        const subjects = [];
+
+        // 1) 数学: 一元二次方程&二次函数 20道 (索引0~19)  更贴近中考，灵活
+        const mathEquation = [
+            { text: '若关于x的一元二次方程 x² - (2k+1)x + k² = 0 有两个相等的实数根，则k的值为？', opts: ['-1/4', '1/4', '-1/2', '1/2'], ans: 0, exp: '△=0 → (2k+1)²-4k²=0 → 4k+1=0 → k=-1/4' },
+            { text: '已知 m, n 是方程 x² - 5x + 3 = 0 的两根，则 m² + n² 的值为？', opts: ['19', '25', '22', '16'], ans: 0, exp: 'm+n=5, mn=3, m²+n²=(m+n)²-2mn=25-6=19' },
+            { text: '某商品原价100元，连续两次降价后为81元，平均每次降价的百分率为？', opts: ['10%', '9%', '8%', '11%'], ans: 0, exp: '100(1-x)²=81 → (1-x)²=0.81 → x=0.1' },
+            { text: '抛物线 y = -2(x-1)² + 3 的顶点坐标是？', opts: ['(1,3)', '(-1,3)', '(1,-3)', '(-1,-3)'], ans: 0, exp: '顶点式 y=a(x-h)²+k → (1,3)' },
+            { text: '二次函数 y = x² - 4x + 5 的最小值为？', opts: ['1', '5', '0', '-1'], ans: 0, exp: 'y=(x-2)²+1 → 最小值为1' },
+            { text: '若抛物线 y = ax² + bx + c 经过点(-1,0)和(3,0)，则对称轴为？', opts: ['x=1', 'x=2', 'x=-1', 'x=0'], ans: 0, exp: '对称轴为两零点中点 x=(-1+3)/2=1' },
+            { text: '方程 x² - 3x + 1 = 0 的两根之积为？', opts: ['1', '3', '-1', '-3'], ans: 0, exp: '韦达定理：x₁x₂=c/a=1' },
+            { text: '二次函数 y = x² - 2x - 3 与x轴的交点坐标为？', opts: ['(3,0),(-1,0)', '(-3,0),(1,0)', '(2,0),(-1,0)', '(3,0),(1,0)'], ans: 0, exp: 'x²-2x-3=0 → (x-3)(x+1)=0' },
+            { text: '某工厂一月份产值50万，三月份产值72万，若每月增长率相同，则增长率为？', opts: ['20%', '15%', '25%', '18%'], ans: 0, exp: '50(1+x)²=72 → (1+x)²=1.44 → x=0.2' },
+            { text: '关于x的方程 x² + mx + 1 = 0 有两个不相等的实数根，则m的取值范围？', opts: ['m>2或m<-2', 'm>2', 'm<-2', '-2<m<2'], ans: 0, exp: '△=m²-4>0 → m>2或m<-2' },
+        ];
+        for (let i=0; i<10; i++) {
+            let q = mathEquation[i % mathEquation.length];
+            subjects.push({ id: `m1_${i}`, subject: '数学', topic: '一元二次方程·二次函数', text: q.text, options: q.opts, answer: q.ans, explanation: q.exp });
+        }
+        // 补全10道二次函数变化
+        for (let i=10; i<20; i++) {
+            let a = i%3+1, b = (i*2+1)%7, c = (i*3+2)%5;
+            subjects.push({
+                id: `m1_${i}`,
+                subject: '数学',
+                topic: '二次函数综合',
+                text: `二次函数 y = ${a}x² + ${b}x + ${c} 的顶点在x轴上，则b² - 4ac = ？ (a=${a}, c=${c})`,
+                options: ['0', '1', '-1', '4'],
+                answer: 0,
+                explanation: `顶点在x轴上 → △=0 → b²-4ac=0`
+            });
+        }
+
+        // 2) 数学其他 20道 (初三重点：相似、圆、三角函数、概率等) (索引20~39)
+        for (let i=0; i<20; i++) {
+            let qs = [
+                { text: '在Rt△ABC中，∠C=90°，sinA=3/5，则tanB的值为？', opts: ['4/3', '3/4', '4/5', '5/4'], ans: 1, exp: 'sinA=3/5 → 对边3,斜5,邻4, tanB=对/邻=3/4' },
+                { text: '圆O的半径为5，弦AB长为8，则弦AB所对的圆周角等于？', opts: ['30°', '45°', '60°', '90°'], ans: 2, exp: '弦长8→弦心距3→圆心角120°→圆周角60°' },
+                { text: '两个相似三角形的面积比为4:9，则对应边上的中线比为？', opts: ['2:3', '4:9', '16:81', '3:2'], ans: 0, exp: '面积比=相似比² → 相似比=2:3' },
+                { text: '一个不透明的袋中装有3个红球，2个白球，随机摸出一个是红球的概率为？', opts: ['3/5', '2/5', '1/2', '4/5'], ans: 0, exp: 'P=3/(3+2)=3/5' },
+                { text: '在△ABC中，D,E分别是AB,AC上的点，DE∥BC，AD=2，DB=4，则DE:BC=？', opts: ['1:3', '2:3', '1:2', '2:5'], ans: 0, exp: 'AD:AB=2:6=1:3 → DE:BC=1:3' },
+            ];
+            let q = qs[i % qs.length];
+            subjects.push({
+                id: `m2_${i}`,
+                subject: '数学',
+                topic: '其他(初三)',
+                text: q.text,
+                options: q.opts,
+                answer: q.ans,
+                explanation: q.exp
+            });
+        }
+
+        // 3) 语文古诗文 20道 (索引40~59)  重点初三篇目
+        const poemData = [
+            { text: '“长风破浪会有时” 的下一句？', opts: ['直挂云帆济沧海', '千金散尽还复来', '天生我材必有用', '与尔同销万古愁'], ans: 0, exp: '李白《行路难》' },
+            { text: '“先天下之忧而忧” 的下一句？', opts: ['后天下之乐而乐', '进亦忧退亦忧', '处江湖之远则忧其君', '居庙堂之高则忧其民'], ans: 0, exp: '范仲淹《岳阳楼记》' },
+            { text: '“醉翁之意不在酒” 出自？', opts: ['欧阳修《醉翁亭记》', '苏轼《记承天寺夜游》', '柳宗元《小石潭记》', '韩愈《马说》'], ans: 0, exp: '欧阳修《醉翁亭记》' },
+            { text: '“大漠孤烟直，长河落日圆” 的作者？', opts: ['王维', '岑参', '高适', '王之涣'], ans: 0, exp: '王维《使至塞上》' },
+            { text: '“但愿人长久，千里共婵娟” 出自？', opts: ['苏轼《水调歌头》', '李白《月下独酌》', '杜甫《月夜忆舍弟》', '张九龄《望月怀远》'], ans: 0, exp: '苏轼《水调歌头》' },
+        ];
+        for (let i=0; i<20; i++) {
+            let q = poemData[i % poemData.length];
+            subjects.push({
+                id: `c1_${i}`,
+                subject: '语文',
+                topic: '古诗文',
+                text: q.text,
+                options: q.opts,
+                answer: q.ans,
+                explanation: q.exp
+            });
+        }
+
+        // 4) 语文其他 20道 (初三：病句、成语、文学常识) (索引60~79)
+        for (let i=0; i<20; i++) {
+            let qs = [
+                { text: '下列句子没有语病的一项是？', opts: ['通过这次活动，使我的语言表达能力得到了提高。', '能否刻苦学习，是取得好成绩的关键。', '我们只要相信自己的能力，才能在各种考验中从容不迫。', '中国制造的“复兴号”高铁，其速度之快、品质之高，令世界惊叹。'], ans: 3, exp: 'A缺主语，B两面对一面，C关联词搭配不当' },
+                { text: '下列成语使用正确的一项是？', opts: ['他做事总是首鼠两端，深得大家信任。', '春天的大明湖，碧波荡漾，美不胜收。', '面对困难，我们要有目空一切的气势。', '他的演讲水平很高，总是强词夺理。'], ans: 1, exp: 'A贬义，C贬义，D贬义' },
+                { text: '下列文学常识表述有误的一项是？', opts: ['《我的叔叔于勒》作者莫泊桑，法国作家。', '《变色龙》作者契诃夫，俄国作家。', '《鱼我所欲也》选自《孟子》，孟子是道家学派代表人物。', '《送东阳马生序》作者宋濂，明代文学家。'], ans: 2, exp: '孟子是儒家学派代表人物。' },
+            ];
+            let q = qs[i % qs.length];
+            subjects.push({
+                id: `c2_${i}`,
+                subject: '语文',
+                topic: '其他(初三)',
+                text: q.text,
+                options: q.opts,
+                answer: q.ans,
+                explanation: q.exp
+            });
+        }
+
+        // 5) 英语 40道 (索引80~119) 初三难度
+        for (let i=0; i<40; i++) {
+            let qs = [
+                { text: 'The movie ______ for 20 minutes when I arrived.', opts: ['had been on', 'has been on', 'was on', 'would be on'], ans: 0, exp: '过去完成时+延续性动词，had been on' },
+                { text: 'Could you tell me ______?', opts: ['where is the post office', 'where the post office is', 'where was the post office', 'where the post office was'], ans: 1, exp: '宾语从句用陈述语序' },
+                { text: 'I prefer ______ at home rather than ______ out on rainy days.', opts: ['to stay; go', 'stay; go', 'staying; going', 'to stay; to go'], ans: 0, exp: 'prefer to do rather than do' },
+                { text: 'It’s high time that we ______ to protect the environment.', opts: ['take action', 'took action', 'will take action', 'have taken'], ans: 1, exp: 'It’s high time that + 过去式/ should do' },
+                { text: 'The number of students in our school ______ more than 3000, and a number of them ______ from the countryside.', opts: ['is; are', 'are; is', 'is; is', 'are; are'], ans: 0, exp: 'the number of + 单数；a number of + 复数' },
+            ];
+            let q = qs[i % qs.length];
+            subjects.push({
+                id: `e_${i}`,
+                subject: '英语',
+                topic: '语法/词汇',
+                text: q.text,
+                options: q.opts,
+                answer: q.ans,
+                explanation: q.exp
+            });
+        }
+
+        // 总计120
+        const totalQuestions = subjects.length; 
+
+        let appState = {
+            questions: subjects,
+            selected: new Array(totalQuestions).fill(null),
+            showAnswers: false,
+            score: 0,
+            wrongIds: [],
+        };
+
+        const listEl = document.getElementById('questionList');
+        const progressStats = document.getElementById('progressStats');
+        const scorePanel = document.getElementById('scorePanel');
+        const scoreDisplay = document.getElementById('scoreDisplay');
+        const wrongContainer = document.getElementById('wrongBookContainer');
+        const wrongList = document.getElementById('wrongList');
+
+        function renderQuestions() {
+            let html = '';
+            let sections = [
+                { name: '数学 · 一元二次方程&二次函数', start: 0, end: 20 },
+                { name: '数学 · 其他 (初三)', start: 20, end: 40 },
+                { name: '语文 · 古诗文 (初三)', start: 40, end: 60 },
+                { name: '语文 · 其他 (初三)', start: 60, end: 80 },
+                { name: '英语 · 40题 (初三难度)', start: 80, end: 120 }
+            ];
+            for (let s of sections) {
+                html += `<div class="section-tag">${s.name}</div>`;
+                for (let i = s.start; i < s.end; i++) {
+                    const q = appState.questions[i];
+                    const selectedIdx = appState.selected[i];
+                    const opts = q.options;
+                    let optHtml = opts.map((opt, idx) => {
+                        const checked = (selectedIdx === idx) ? 'checked' : '';
+                        return `<label><input type="radio" name="q${i}" value="${idx}" ${checked} data-qidx="${i}" data-optidx="${idx}"> ${opt}</label>`;
+                    }).join('');
+                    html += `
+                        <div class="question-item" data-qidx="${i}">
+                            <div class="q-header">
+                                <span class="q-num">${q.subject} ${i+1}</span>
+                                <span style="font-weight:400; color:#3f688b;">[${q.topic}]</span>
+                            </div>
+                            <div class="q-text">${q.text}</div>
+                            <div class="options">${optHtml}</div>
+                            <div class="answer-area" id="answerArea_${i}"></div>
+                        </div>
+                    `;
+                }
+            }
+            listEl.innerHTML = html;
+
+            document.querySelectorAll('input[type="radio"]').forEach(radio => {
+                radio.addEventListener('change', function(e) {
+                    const qidx = parseInt(this.dataset.qidx);
+                    const optIdx = parseInt(this.dataset.optidx);
+                    if (!isNaN(qidx) && !isNaN(optIdx)) {
+                        appState.selected[qidx] = optIdx;
+                        updateProgress();
+                        const area = document.getElementById(`answerArea_${qidx}`);
+                        if (area) area.classList.remove('show');
+                    }
+                });
+            });
+            updateProgress();
+        }
+
+        function updateProgress() {
+            const answered = appState.selected.filter(v => v !== null).length;
+            progressStats.textContent = `⚡ 已选 ${answered} / 120`;
+        }
+
+        function handleSubmit() {
+            let correctCount = 0;
+            const wrongIds = [];
+            for (let i = 0; i < totalQuestions; i++) {
+                const q = appState.questions[i];
+                const selected = appState.selected[i];
+                const area = document.getElementById(`answerArea_${i}`);
+                if (!area) continue;
+                const isCorrect = (selected !== null && selected === q.answer);
+                if (isCorrect) correctCount++;
+                else wrongIds.push(i);
+
+                let correctAns = q.options[q.answer];
+                let userAns = (selected !== null) ? q.options[selected] : '未作答';
+                let statusClass = (selected !== null && selected === q.answer) ? 'correct' : 'wrong';
+                let statusText = (selected !== null && selected === q.answer) ? '✅ 正确' : '❌ 错误/未选';
+                area.innerHTML = `
+                    <div><span class="${statusClass}">${statusText}</span> &nbsp; 正确答案: ${correctAns} &nbsp; 你的选择: ${userAns}</div>
+                    <div class="explain">💡 ${q.explanation}</div>
+                `;
+                area.classList.add('show');
+            }
+
+            appState.score = correctCount;
+            appState.wrongIds = wrongIds;
+            scoreDisplay.textContent = correctCount;
+            scorePanel.style.display = 'flex';
+            renderWrongBook(wrongIds);
+            appState.showAnswers = true;
+            updateProgress();
+        }
+
+        function renderWrongBook(wrongIds) {
+            if (!wrongIds || wrongIds.length === 0) {
+                wrongContainer.style.display = 'block';
+                wrongList.innerHTML = '<div style="padding:12px;">🎉 全部正确，继续加油！</div>';
+                return;
+            }
+            let html = '';
+            for (let idx of wrongIds) {
+                const q = appState.questions[idx];
+                const selected = appState.selected[idx];
+                const userAns = (selected !== null) ? q.options[selected] : '未作答';
+                html += `
+                    <div class="wrong-item">
+                        <strong>${q.subject} [${q.topic}] 第${idx+1}题</strong><br>
+                        <span style="color:#2c577b;">${q.text}</span><br>
+                        <span style="color:#a13232;">你的选择: ${userAns}</span> &nbsp; 
+                        <span style="color:#1d6b3a;">正确: ${q.options[q.answer]}</span><br>
+                        <span style="background:#eaeef5; padding:2px 12px; border-radius:30px;">📘 ${q.explanation}</span>
+                    </div>
+                `;
+            }
+            wrongContainer.style.display = 'block';
+            wrongList.innerHTML = html;
+        }
+
+        function handleReset() {
+            appState.selected = new Array(totalQuestions).fill(null);
+            appState.showAnswers = false;
+            appState.score = 0;
+            appState.wrongIds = [];
+            scorePanel.style.display = 'none';
+            wrongContainer.style.display = 'none';
+            renderQuestions();
+            document.querySelectorAll('.answer-area').forEach(el => el.classList.remove('show'));
+            updateProgress();
+        }
+
+        function showWrongBook() {
+            if (appState.wrongIds.length === 0 && !appState.showAnswers) {
+                alert('请先提交试卷，或重新作答后查看错题本');
+                return;
+            }
+            if (appState.wrongIds.length === 0) {
+                renderWrongBook([]);
+                wrongContainer.style.display = 'block';
+                return;
+            }
+            renderWrongBook(appState.wrongIds);
+            wrongContainer.style.display = 'block';
+        }
+
+        renderQuestions();
+
+        document.getElementById('submitBtn').addEventListener('click', handleSubmit);
+        document.getElementById('resetBtn').addEventListener('click', handleReset);
+        document.getElementById('showWrongBtn').addEventListener('click', showWrongBook);
+
+        window.showWrongBook = showWrongBook;
+    })();
+</script>
+</body>
+</html>
