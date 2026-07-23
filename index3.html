@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>初三中考模拟 · 120题 · 难度适中</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
+            background: #f4f7fb;
+            padding: 30px 20px;
+            color: #1e293b;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 32px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+            padding: 30px 28px;
+        }
+        h1 {
+            font-weight: 600;
+            font-size: 2.2rem;
+            letter-spacing: -0.3px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #e9edf2;
+            padding-bottom: 16px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+        h1 small {
+            font-size: 1rem;
+            font-weight: 400;
+            color: #64748b;
+            background: #f1f5f9;
+            padding: 6px 18px;
+            border-radius: 40px;
+        }
+        .subject-tag {
+            display: inline-block;
+            font-weight: 600;
+            font-size: 0.9rem;
+            padding: 4px 14px;
+            border-radius: 30px;
+            background: #dbeafe;
+            color: #1e4a7a;
+            margin-right: 10px;
+        }
+        .subject-tag.math { background: #dbeafe; color: #1e4a7a; }
+        .subject-tag.chinese { background: #fce7f3; color: #831843; }
+        .subject-tag.english { background: #d1fae5; color: #065f46; }
+
+        .question-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            margin: 28px 0;
+        }
+        .question-item {
+            background: #fafcff;
+            border: 1px solid #e9edf2;
+            border-radius: 20px;
+            padding: 18px 24px 20px;
+            transition: 0.1s ease;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.01);
+        }
+        .question-item.correct-highlight {
+            border-left: 6px solid #22c55e;
+            background: #f6fef9;
+        }
+        .question-item.wrong-highlight {
+            border-left: 6px solid #ef4444;
+            background: #fef6f6;
+        }
+        .q-header {
+            display: flex;
+            align-items: baseline;
+            gap: 6px;
+            flex-wrap: wrap;
+            margin-bottom: 8px;
+        }
+        .q-number {
+            font-weight: 600;
+            color: #334155;
+            min-width: 44px;
+        }
+        .q-text {
+            font-size: 1.05rem;
+            font-weight: 500;
+            margin: 4px 0 12px 0;
+            line-height: 1.5;
+        }
+        .options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 8px 18px;
+            margin: 10px 0 6px;
+            padding-left: 4px;
+        }
+        .option {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.98rem;
+            padding: 6px 4px;
+            border-radius: 10px;
+            transition: 0.05s;
+        }
+        .option input[type="radio"] {
+            width: 18px;
+            height: 18px;
+            accent-color: #2563eb;
+            margin-right: 6px;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+        .option label {
+            cursor: pointer;
+            width: 100%;
+        }
+        .action-bar {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 30px;
+            gap: 18px;
+            border-top: 1px solid #e9edf2;
+            padding-top: 28px;
+        }
+        .btn {
+            background: white;
+            border: 1px solid #cbd5e1;
+            padding: 10px 24px;
+            border-radius: 60px;
+            font-weight: 500;
+            font-size: 1rem;
+            color: #1e293b;
+            cursor: pointer;
+            transition: 0.2s;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .btn-primary {
+            background: #1e293b;
+            border: 1px solid #1e293b;
+            color: white;
+        }
+        .btn-primary:hover {
+            background: #0f172a;
+        }
+        .btn-success {
+            background: #16a34a;
+            border: 1px solid #16a34a;
+            color: white;
+        }
+        .btn-success:hover {
+            background: #15803d;
+        }
+        .btn-outline {
+            background: transparent;
+            border: 1px solid #94a3b8;
+        }
+        .btn-outline:hover {
+            background: #f1f5f9;
+        }
+        .btn:disabled {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+        .score-panel {
+            background: #f8fafc;
+            border-radius: 40px;
+            padding: 8px 22px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .score-panel span {
+            font-size: 1.6rem;
+            color: #0f172a;
+        }
+        .wrong-book {
+            margin-top: 32px;
+            background: #fefcf5;
+            border-radius: 24px;
+            border: 1px solid #e2e8f0;
+            padding: 12px 20px 20px;
+        }
+        .wrong-book h3 {
+            font-weight: 600;
+            font-size: 1.2rem;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .wrong-book h3 span {
+            background: #ef4444;
+            color: white;
+            border-radius: 40px;
+            padding: 0px 14px;
+            font-size: 0.9rem;
+        }
+        .wrong-item {
+            border-bottom: 1px dashed #e2e8f0;
+            padding: 14px 0 12px;
+        }
+        .wrong-item .wrong-q {
+            font-weight: 500;
+        }
+        .wrong-item .wrong-answer {
+            color: #b91c1c;
+            background: #fee2e2;
+            padding: 0 10px;
+            border-radius: 30px;
+            display: inline-block;
+        }
+        .wrong-item .correct-answer {
+            color: #166534;
+            background: #dcfce7;
+            padding: 0 10px;
+            border-radius: 30px;
+            display: inline-block;
+        }
+        .wrong-item .explain {
+            color: #475569;
+            background: #f1f5f9;
+            padding: 4px 14px;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            margin-top: 6px;
+            display: inline-block;
+        }
+        .subject-divider {
+            margin: 8px 0 14px;
+            font-size: 1.3rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .subject-divider hr {
+            flex: 1;
+            border: none;
+            border-top: 2px solid #e2e8f0;
+        }
+        .footer-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .status-badge {
+            font-size: 0.8rem;
+            background: #e9edf2;
+            padding: 2px 14px;
+            border-radius: 40px;
+        }
+        @media (max-width: 700px) {
+            .container { padding: 16px; }
+            .options { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+<div class="container" id="app">
+    <h1>
+        📚 中考全真模拟 · 120题
+        <small>数学·语文·英语</small>
+    </h1>
+    <div style="display: flex; gap: 18px; flex-wrap: wrap; margin-bottom: 18px;">
+        <div><span class="subject-tag math">数学 40</span><span class="subject-tag chinese">语文 40</span><span class="subject-tag english">英语 40</span></div>
+        <div class="score-panel" id="scoreDisplay">📊 得分 <span id="scoreNum">0</span></div>
+    </div>
+
+    <!-- 题目列表 -->
+    <div id="questionList" class="question-grid"></div>
+
+    <!-- 操作栏 -->
+    <div class="action-bar">
+        <div class="footer-actions">
+            <button class="btn btn-primary" id="submitBtn">✅ 提交 & 出成绩</button>
+            <button class="btn btn-outline" id="resetBtn">⟳ 重置所有</button>
+        </div>
+        <div style="font-size:0.9rem; color:#64748b;">
+            <span id="answeredCount">0</span> / 120 已选
+        </div>
+    </div>
+
+    <!-- 错题本 (包含未做 + 错误) -->
+    <div id="wrongBookContainer" class="wrong-book" style="margin-top: 24px;">
+        <h3>📕 错题本 <span id="wrongCount">0</span></h3>
+        <div id="wrongBookContent"><p style="color:#94a3b8; padding:8px 0;">尚未提交，完成答题后查看错题与解析。</p></div>
+    </div>
+</div>
+<script>
+    (function() {
+        // ----- 生成 120 道题 (数学40, 语文40, 英语40)  · 初三内容 · 难度适中 -----
+        const subjects = ['math', 'chinese', 'english'];
+        const subjectLabels = { math: '数学', chinese: '语文', english: '英语' };
+        const subjectColors = { math: 'math', chinese: 'chinese', english: 'english' };
+
+        function generateQuestions() {
+            const qs = [];
+            let id = 0;
+
+            // 数学 40  · 初三核心：二次函数、圆、相似、锐角三角函数、方程等
+            for (let i = 0; i < 40; i++) {
+                const num = i + 1;
+                let text, options, correct, explanation;
+                if (i % 6 === 0) {
+                    text = `抛物线 y = (x-2)² + 3 的顶点坐标是？`;
+                    options = ['A. (2, 3)', 'B. (-2, 3)', 'C. (2, -3)', 'D. (-2, -3)'];
+                    correct = 'A';
+                    explanation = 'y = (x-h)² + k 顶点为 (h, k) ⇒ (2, 3)';
+                } else if (i % 6 === 1) {
+                    text = `在 Rt△ABC 中，∠C=90°，AC=3，BC=4，则 sin A = ?`;
+                    options = ['A. 3/5', 'B. 4/5', 'C. 3/4', 'D. 4/3'];
+                    correct = 'B';
+                    explanation = 'AB=5, sin A = 对边/斜边 = BC/AB = 4/5';
+                } else if (i % 6 === 2) {
+                    text = `若关于 x 的方程 x² - 4x + m = 0 有两个相等实数根，则 m = ?`;
+                    options = ['A. 4', 'B. -4', 'C. 16', 'D. -16'];
+                    correct = 'A';
+                    explanation = 'Δ = 16 - 4m = 0 ⇒ m = 4';
+                } else if (i % 6 === 3) {
+                    text = `如图，△ABC∽△DEF，相似比为 2:3，则面积比为？`;
+                    options = ['A. 2:3', 'B. 3:2', 'C. 4:9', 'D. 9:4'];
+                    correct = 'C';
+                    explanation = '面积比 = 相似比平方 = 4:9';
+                } else if (i % 6 === 4) {
+                    text = `圆 O 的半径为 5，弦 AB 长 8，则弦心距为？`;
+                    options = ['A. 3', 'B. 4', 'C. √39', 'D. 6'];
+                    correct = 'A';
+                    explanation = 'd = √(R² - (AB/2)²) = √(25-16) = 3';
+                } else {
+                    text = `将二次函数 y = 2x² 向左平移 1 个单位，再向上平移 2 个单位，得到？`;
+                    options = ['A. y = 2(x-1)²+2', 'B. y = 2(x+1)²+2', 'C. y = 2(x-1)²-2', 'D. y = 2(x+1)²-2'];
+                    correct = 'B';
+                    explanation = '左加右减，上加下减 ⇒ y = 2(x+1)²+2';
+                }
+                qs.push({ id: id++, subject: 'math', number: num, text, options, correct, explanation, selected: null, status: 'unanswered' });
+            }
+
+            // 语文 40  · 初三：文言文、诗词、名著、语基
+            for (let i = 0; i < 40; i++) {
+                const num = i + 1;
+                let text, options, correct, explanation;
+                if (i % 5 === 0) {
+                    text = `“醉翁之意不在酒，在乎山水之间也” 出自？`;
+                    options = ['A. 《岳阳楼记》', 'B. 《醉翁亭记》', 'C. 《小石潭记》', 'D. 《桃花源记》'];
+                    correct = 'B';
+                    explanation = '欧阳修《醉翁亭记》';
+                } else if (i % 5 === 1) {
+                    text = `下列加点字注音完全正确的一项是？`;
+                    options = ['A. 阴晦(huì)   B. 恣睢(suī)   C. 拮据(jù)   D. 褴褛(lǒu)'];
+                    correct = 'B';
+                    explanation = 'A 晦 huì；C 据 jū；D 褛 lǚ；B 正确';
+                } else if (i % 5 === 2) {
+                    text = `“长风破浪会有时，直挂云帆济沧海” 的作者是？`;
+                    options = ['A. 杜甫', 'B. 李白', 'C. 王维', 'D. 孟浩然'];
+                    correct = 'B';
+                    explanation = '李白《行路难》';
+                } else if (i % 5 === 3) {
+                    text = `下列句子没有语病的一项是？`;
+                    options = ['A. 通过这次实践活动，使我们开阔了视野。', 'B. 2023年广州的春天是美丽的季节。', 'C. 我们要养成按时完成作业的习惯。', 'D. 能否刻苦学习，是取得好成绩的关键。'];
+                    correct = 'C';
+                    explanation = 'A 缺主语；B 语序不当；D 两面对一面';
+                } else {
+                    text = `下列选项中，与“但愿人长久，千里共婵娟”表达情感最接近的是？`;
+                    options = ['A. 举头望明月，低头思故乡。', 'B. 海内存知己，天涯若比邻。', 'C. 月有阴晴圆缺，人有悲欢离合。', 'D. 我寄愁心与明月，随君直到夜郎西。'];
+                    correct = 'B';
+                    explanation = '都表达对远方亲人友人的美好祝愿与豁达。';
+                }
+                qs.push({ id: id++, subject: 'chinese', number: num, text, options, correct, explanation, selected: null, status: 'unanswered' });
+            }
+
+            // 英语 40  · 初三：时态、被动语态、宾语从句、词汇、情景交际
+            for (let i = 0; i < 40; i++) {
+                const num = i + 1;
+                let text, options, correct, explanation;
+                if (i % 6 === 0) {
+                    text = `My mother ____ breakfast when I ____ up yesterday.`;
+                    options = ['A. made, get', 'B. was making, got', 'C. makes, get', 'D. is making, got'];
+                    correct = 'B';
+                    explanation = '过去进行时 (was making) + 一般过去时 (got)';
+                } else if (i % 6 === 1) {
+                    text = `The new bridge ____ next year.`;
+                    options = ['A. builds', 'B. is built', 'C. will be built', 'D. has built'];
+                    correct = 'C';
+                    explanation = '被动语态一般将来时：will be built';
+                } else if (i % 6 === 2) {
+                    text = `— Could you tell me ____ ? — Sure. It’s next to the bank.`;
+                    options = ['A. where is the library', 'B. where the library is', 'C. the library is where', 'D. where the library was'];
+                    correct = 'B';
+                    explanation = '宾语从句用陈述语序：where the library is';
+                } else if (i % 6 === 3) {
+                    text = `I prefer ____ at home rather than ____ out on rainy days.`;
+                    options = ['A. stay, go', 'B. to stay, to go', 'C. stay, to go', 'D. to stay, go'];
+                    correct = 'D';
+                    explanation = 'prefer to do rather than do';
+                } else if (i % 6 === 4) {
+                    text = `— I’m sorry I broke your cup. — ____ .`;
+                    options = ['A. You’re welcome', 'B. That’s right', 'C. Never mind', 'D. My pleasure'];
+                    correct = 'C';
+                    explanation = '回答道歉用 Never mind';
+                } else {
+                    text = `The number of students in our school ____ about 2000. A number of them ____ from the countryside.`;
+                    options = ['A. are, come', 'B. is, comes', 'C. is, come', 'D. are, comes'];
+                    correct = 'C';
+                    explanation = 'the number of + 谓语单数；a number of + 谓语复数';
+                }
+                qs.push({ id: id++, subject: 'english', number: num, text, options, correct, explanation, selected: null, status: 'unanswered' });
+            }
+
+            return qs;
+        }
+
+        let questions = generateQuestions();
+        let submitted = false;
+
+        // DOM 元素
+        const questionListEl = document.getElementById('questionList');
+        const scoreNum = document.getElementById('scoreNum');
+        const wrongCountEl = document.getElementById('wrongCount');
+        const wrongBookContent = document.getElementById('wrongBookContent');
+        const answeredCountSpan = document.getElementById('answeredCount');
+        const submitBtn = document.getElementById('submitBtn');
+        const resetBtn = document.getElementById('resetBtn');
+
+        // 渲染
+        function render() {
+            let html = '';
+            const subjects = ['math', 'chinese', 'english'];
+            const subjectMap = { math: '数学', chinese: '语文', english: '英语' };
+            let currentSubject = '';
+            for (let i = 0; i < questions.length; i++) {
+                const q = questions[i];
+                if (q.subject !== currentSubject) {
+                    currentSubject = q.subject;
+                    const label = subjectMap[currentSubject];
+                    html += `<div class="subject-divider"><span class="subject-tag ${currentSubject}">${label}</span><hr></div>`;
+                }
+                const optHtml = q.options.map((opt, idx) => {
+                    const letter = String.fromCharCode(65 + idx); // A,B,C,D
+                    const checked = (q.selected === letter) ? 'checked' : '';
+                    return `<div class="option"><input type="radio" name="q${q.id}" value="${letter}" id="q${q.id}_${letter}" ${checked}><label for="q${q.id}_${letter}">${opt}</label></div>`;
+                }).join('');
+
+                let highlightClass = '';
+                if (submitted) {
+                    if (q.selected === q.correct) highlightClass = 'correct-highlight';
+                    else if (q.selected !== null && q.selected !== q.correct) highlightClass = 'wrong-highlight';
+                    else if (q.selected === null) highlightClass = 'wrong-highlight'; // 未做也标红
+                }
+
+                html += `<div class="question-item ${highlightClass}" data-qid="${q.id}">
+                    <div class="q-header">
+                        <span class="q-number">${q.subject === 'math' ? 'M' : q.subject === 'chinese' ? 'C' : 'E'}${q.number}.</span>
+                        <span class="status-badge">${q.selected ? '已选' : '未做'}</span>
+                    </div>
+                    <div class="q-text">${q.text}</div>
+                    <div class="options">${optHtml}</div>
+                </div>`;
+            }
+            questionListEl.innerHTML = html;
+
+            // 绑定radio change事件
+            document.querySelectorAll('input[type="radio"]').forEach(radio => {
+                radio.addEventListener('change', function(e) {
+                    if (submitted) return; // 提交后不可更改
+                    const name = this.name;
+                    const qid = parseInt(name.replace('q', ''));
+                    const val = this.value;
+                    const q = questions.find(q => q.id === qid);
+                    if (q) {
+                        q.selected = val;
+                        q.status = 'answered';
+                        updateAnsweredCount();
+                        if (!submitted) {
+                            render(); 
+                        }
+                    }
+                });
+            });
+
+            updateAnsweredCount();
+            if (submitted) {
+                computeScoreAndWrong();
+            } else {
+                wrongBookContent.innerHTML = `<p style="color:#94a3b8; padding:8px 0;">📌 完成答题后点击 “提交” 查看错题与解析。</p>`;
+                wrongCountEl.textContent = '0';
+            }
+        }
+
+        function updateAnsweredCount() {
+            const answered = questions.filter(q => q.selected !== null).length;
+            answeredCountSpan.textContent = answered;
+        }
+
+        function handleSubmit() {
+            submitted = true;
+            questions.forEach(q => {
+                if (q.selected === null) q.status = 'unanswered';
+                else q.status = 'answered';
+            });
+            render();
+            computeScoreAndWrong();
+        }
+
+        function computeScoreAndWrong() {
+            let correctCount = 0;
+            questions.forEach(q => {
+                if (q.selected === q.correct) correctCount++;
+            });
+            scoreNum.textContent = correctCount;
+
+            const wrongs = questions.filter(q => q.selected !== q.correct);
+            wrongCountEl.textContent = wrongs.length;
+
+            if (wrongs.length === 0) {
+                wrongBookContent.innerHTML = `<p style="color:#16a34a; font-weight:500;">🎉 全部正确！太棒了！</p>`;
+                return;
+            }
+
+            let wHtml = '';
+            wrongs.forEach((q, idx) => {
+                const subjectLabel = subjectLabels[q.subject] || '';
+                const correctAns = q.correct;
+                const yourAns = q.selected || '未作答';
+                wHtml += `<div class="wrong-item">
+                    <div class="wrong-q"><span class="subject-tag ${q.subject}">${subjectLabel}</span> ${q.text}</div>
+                    <div>你的答案: <span class="wrong-answer">${yourAns}</span> &nbsp; 正确答案: <span class="correct-answer">${correctAns}</span></div>
+                    <div class="explain">💡 ${q.explanation}</div>
+                </div>`;
+            });
+            wrongBookContent.innerHTML = wHtml;
+        }
+
+        function resetAll() {
+            submitted = false;
+            questions.forEach(q => {
+                q.selected = null;
+                q.status = 'unanswered';
+            });
+            scoreNum.textContent = '0';
+            wrongCountEl.textContent = '0';
+            wrongBookContent.innerHTML = `<p style="color:#94a3b8; padding:8px 0;">尚未提交，完成答题后查看错题与解析。</p>`;
+            render();
+        }
+
+        submitBtn.addEventListener('click', handleSubmit);
+        resetBtn.addEventListener('click', resetAll);
+
+        render();
+    })();
+</script>
+</body>
+</html>
